@@ -21,5 +21,8 @@ public class GameRequestDto {
     private Fields field;
     private List<Member> players;
     private List<Sheet> sheets;
+
+    private String[] names;
+
     private boolean isRemoved;
 }

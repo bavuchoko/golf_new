@@ -13,7 +13,7 @@ import pjs.golf.app.member.entity.Member;
 
 public interface MemberService extends UserDetailsService {
 
-    Member createMember(Member userAccount);
+    Member createMember(Member member);
 
     String authorize(MemberRequestDto memberRequestDto, HttpServletResponse response, HttpServletRequest request);
 
