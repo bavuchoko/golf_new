@@ -19,5 +19,6 @@ public class GameResponseDto {
     private FieldsResponseDto field;
     private List<MemberResponseDto> players;
     private List<GameResponseDto> games;
+    private GameStatus status;
     private boolean isRemoved;
 }

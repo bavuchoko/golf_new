@@ -3,6 +3,7 @@ package pjs.golf.app.game.service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.dto.GameResponseDto;
 import pjs.golf.app.game.entity.Game;
@@ -15,7 +16,7 @@ public interface GameService {
     CollectionModel getGameList(SearchDto search, Pageable pageable, PagedResourcesAssembler<Game> assembler, Member member);
 
 
-    GameResponseDto getGameInfo(String id);
+    EntityModel getGameInfo(Long id, Member member);
 
-    GameResponseDto createGame(GameRequestDto gameRequestDto, Member member);
+    EntityModel createGame(GameRequestDto gameRequestDto, Member member);
 }

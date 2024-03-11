@@ -13,13 +13,22 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import pjs.golf.app.member.dto.MemberAdapter;
 import pjs.golf.app.member.dto.MemberRequestDto;
+import pjs.golf.app.member.entity.Gender;
 import pjs.golf.app.member.entity.Member;
 import pjs.golf.app.member.entity.MemberRole;
+import pjs.golf.app.member.mapper.MemberMapper;
 import pjs.golf.app.member.repository.MemberJpaRepository;
+import pjs.golf.app.member.repository.querydsl.MemberQuerydslSupport;
 import pjs.golf.app.member.service.MemberService;
 import pjs.golf.config.token.TokenManager;
 import pjs.golf.config.token.TokenType;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +36,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final PasswordEncoder passwordEncoder;
     private final MemberJpaRepository memberJpaRepository;
+    private final MemberQuerydslSupport memberQuerydslSupport;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenManager tokenManager;
 
@@ -75,6 +85,30 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        return new MemberAdapter(memberJpaRepository.findByUsernameWithRoles(username)
+                .orElseThrow(()->new UsernameNotFoundException(username)));
     }
+
+    @Override
+    public List getTempUsersByUserNames(List names) {
+        //id가 temp_이름  인 사람들
+        return memberQuerydslSupport.getTempUsersByUserNames(names);
+    }
+
+    @Override
+    public List createUserIfDosenExist(List<String> names) {
+        List tempUsers = names.stream()
+                .map(e -> MemberMapper.Instance.toEntity(MemberRequestDto.builder()
+                        .name(e)
+                        .password(this.passwordEncoder.encode("temp_xxaareddfef"))
+                        .username("temp_"+e)
+                        .birth("6001011")
+                        .gender(Gender.MALE)
+                        .joinDate(LocalDateTime.now())
+                        .roles(Set.of(MemberRole.USER))
+                        .build())).collect(Collectors.toList());
+        memberJpaRepository.saveAll(tempUsers);
+        return memberQuerydslSupport.getTempUsersByUserNames(names);
+    }
+
 }

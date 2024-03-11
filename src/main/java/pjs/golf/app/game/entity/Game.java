@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import pjs.golf.app.fields.entity.Fields;
+import pjs.golf.app.game.dto.GameStatus;
 import pjs.golf.app.member.entity.Member;
 import pjs.golf.app.sheet.entity.Sheet;
 
@@ -42,5 +43,8 @@ public class Game {
     private List<Sheet> sheets;
 
     private boolean isRemoved;
+
+    @Enumerated(EnumType.STRING)
+    private GameStatus status;
 
 }

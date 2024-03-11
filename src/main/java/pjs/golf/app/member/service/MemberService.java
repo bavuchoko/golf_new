@@ -10,6 +10,8 @@ import pjs.golf.common.SearchDto;
 import pjs.golf.app.member.dto.MemberResponseDto;
 import pjs.golf.app.member.entity.Member;
 
+import java.util.List;
+
 
 public interface MemberService extends UserDetailsService {
 
@@ -20,4 +22,8 @@ public interface MemberService extends UserDetailsService {
     void logout(HttpServletRequest req, HttpServletResponse res);
 
     String reIssueToken(HttpServletRequest request);
+
+    List<Member> getTempUsersByUserNames(List<Object> list);
+
+    List createUserIfDosenExist(List<String> name);
 }

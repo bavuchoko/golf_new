@@ -1,10 +1,13 @@
 package pjs.golf.app.game;
 
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +23,9 @@ import pjs.golf.common.SearchDto;
 import pjs.golf.common.WebCommon;
 import pjs.golf.common.exception.NoSuchDataException;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/api/game", produces = "application/json;charset=UTF-8")
@@ -28,6 +33,7 @@ import java.util.List;
 public class GameController {
 
     private final GameService gameService;
+
 
     /**
      * 목록조회
@@ -52,9 +58,9 @@ public class GameController {
      * 단일조회
      * */
     @GetMapping("{id}")
-    public ResponseEntity getGame(@PathVariable String id) {
+    public ResponseEntity getGame(@PathVariable Long id, @CurrentUser Member member) {
         try {
-            GameResponseDto game = gameService.getGameInfo(id);
+            EntityModel game = gameService.getGameInfo(id, member);
             return new ResponseEntity(game, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(e, HttpStatus.NO_CONTENT);
@@ -76,8 +82,8 @@ public class GameController {
         if (errors.hasErrors()) {
             return WebCommon.badRequest(errors, this.getClass());
         }
-        GameResponseDto game = gameService.createGame(gameRequestDto, member);
-        return new ResponseEntity(game, HttpStatus.OK);
+        EntityModel resource = gameService.createGame(gameRequestDto, member);
+        return new ResponseEntity(resource, HttpStatus.OK);
     }
 
     /**
@@ -94,7 +100,7 @@ public class GameController {
      */
     @PutMapping("/join/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity joinGame(@PathVariable String id) {
+    public ResponseEntity joinGame(@PathVariable Long id) {
         return null;
     }
 
