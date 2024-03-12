@@ -25,4 +25,9 @@ public class Sheet {
     private Member player;
     private int round;
     private int score;
+
+
+    public void updateScore(int score) {
+        this.score =score;
+    }
 }

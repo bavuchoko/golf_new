@@ -22,6 +22,7 @@ import pjs.golf.app.member.mapper.MemberMapper;
 import pjs.golf.app.member.repository.MemberJpaRepository;
 import pjs.golf.app.member.repository.querydsl.MemberQuerydslSupport;
 import pjs.golf.app.member.service.MemberService;
+import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
 import pjs.golf.config.token.TokenManager;
 import pjs.golf.config.token.TokenType;
 
@@ -42,6 +43,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member createMember(Member member) {
+        memberJpaRepository.findByUsername(member.getUsername()).ifPresent( e->{
+                throw new AlreadyExistSuchDataCustomException("이미 존재하는 아이디 입니다.");});
         member.overwritePassword(passwordEncoder.encode(member.getPassword()));
         return this.memberJpaRepository.save(member);
     }

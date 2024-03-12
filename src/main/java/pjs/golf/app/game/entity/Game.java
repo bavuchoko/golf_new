@@ -47,4 +47,11 @@ public class Game {
     @Enumerated(EnumType.STRING)
     private GameStatus status;
 
+    public void enrollGame(Game game, Member member) {
+        this.players.add(member);
+    }
+
+    public void changeStatus(GameStatus gameStatus) {
+        this.status = gameStatus;
+    }
 }

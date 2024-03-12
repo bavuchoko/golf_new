@@ -26,7 +26,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping
+    @PostMapping("/join")
     public ResponseEntity create(
             @Valid @RequestBody MemberRequestDto memberRequestDto
     ) {

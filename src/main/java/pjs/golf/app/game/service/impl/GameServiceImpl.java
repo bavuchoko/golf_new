@@ -8,7 +8,10 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pjs.golf.app.game.GameController;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.dto.GameResponseDto;
@@ -20,8 +23,12 @@ import pjs.golf.app.game.repository.querydsl.GameQuerydslSupport;
 import pjs.golf.app.game.service.GameService;
 import pjs.golf.app.member.entity.Member;
 import pjs.golf.app.member.service.MemberService;
+import pjs.golf.app.sheet.service.SheetService;
 import pjs.golf.common.SearchDto;
+import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
+import pjs.golf.common.exception.InCorrectStatusCustomException;
 import pjs.golf.common.exception.NoSuchDataException;
+import pjs.golf.common.exception.PermissionLimitedCustomException;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -38,6 +45,7 @@ public class GameServiceImpl implements GameService {
     private final GameJpaRepository gameJpaRepository;
     private final GameQuerydslSupport gameQuerydslSupport;
     private final MemberService memberService;
+    private final SheetService sheetService;
 
     @Override
     public CollectionModel getGameList(SearchDto search, Pageable pageable, PagedResourcesAssembler<Game> assembler, Member member) {
@@ -46,8 +54,23 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public EntityModel getGameInfo(Long id, Member member) {
+    public EntityModel getGameResource(Long id, Member member) {
         Game game = gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
+        return getResource(game, member);
+    }
+    @Override
+    public Game getGameInfo(Long id) {
+        return gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
+    }
+
+    @Override
+    public EntityModel endGame(Long id, Member member) {
+        Game game = gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
+        if(member.equals(game.getHost())){
+            game.changeStatus(GameStatus.END);
+        }else {
+            throw new PermissionLimitedCustomException("권한이 없습니다.");
+        }
         return getResource(game, member);
     }
 
@@ -60,6 +83,66 @@ public class GameServiceImpl implements GameService {
         gameRequestDto.setPlayers(players);
         Game game = gameJpaRepository.save(GameMapper.Instance.toEntity(gameRequestDto));
         return getResource(game, member);
+    }
+
+    @Override
+    public EntityModel enrollGame(Long id, Member member) {
+        Game game= gameJpaRepository.findById(id).orElseThrow(()->new NoSuchDataException("") );
+        if(game.getPlayers().size()<4 && game.getStatus().equals(GameStatus.OPEN)) {
+            List players = game.getPlayers();
+            players.stream().filter(player -> player.equals(member))
+                    .findFirst()
+                    .ifPresent(p -> {
+                        throw new AlreadyExistSuchDataCustomException("이미 참가중입니다.");
+                    });
+            game.enrollGame(game, member);
+        }else {
+            throw new InCorrectStatusCustomException("요청을 처리할 수 없습니다.");
+        }
+
+        return  this.getResource(game);
+    }
+
+
+    @Override
+    @Transactional
+    public void expelPlayer(Long id, Member member, Member target) {
+        Game entity = gameJpaRepository.findById(id).orElseThrow(
+                ()-> new NoSuchDataException("")
+        );
+        if(GameStatus.OPEN != entity.getStatus()){
+            throw new InCorrectStatusCustomException("statusNotAllowedException");
+        }
+        if(entity.getHost().equals(target)){
+            throw new InCorrectStatusCustomException("hostExpelException");
+        }
+        if(entity.getHost().equals(member)) {
+            entity.getPlayers().remove(target);
+        }else{
+            if(!member.equals(target))  throw new InCorrectStatusCustomException("selfExpelAllowedException");
+            else entity.getPlayers().remove(target);
+        }
+    }
+
+    @Override
+    public void startGame(Long id, Member member, int round) throws Exception {
+        Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
+                new NoSuchDataException("없는 데이터")
+        );
+        try {
+            if(gameEntity.getPlayers().size()>1){
+                if (gameEntity.getHost().equals(member)) {
+                    gameEntity.changeStatus(GameStatus.PLAYING);
+                    sheetService.nextRound(member, gameEntity, round);
+                } else {
+                    throw new PermissionLimitedCustomException("권한이 없습니다.");
+                }
+            }else{
+                throw new InCorrectStatusCustomException("플레이어가 없습니다.");
+            }
+        } catch (Exception e) {
+            throw new Exception();
+        }
     }
 
     private List<Member> intiPlayer(GameRequestDto gameRequestDto, Member member) {
@@ -101,9 +184,18 @@ public class GameServiceImpl implements GameService {
         GameResponseDto gameResponseDto = GameMapper.Instance.toResponseDto(game);
         WebMvcLinkBuilder selfLink = linkTo(GameController.class).slash(gameResponseDto.getId());
         EntityModel resource = EntityModel.of(gameResponseDto);
-        if(gameResponseDto.getHost().equals(member)){
+        if(member != null && gameResponseDto.getHost().equals(member)){
             resource.add(linkTo(GameController.class).slash("score").withRel("update"));
         }
+        resource.add(selfLink.withRel("query-content"));
+
+        return resource;
+    }
+
+    public EntityModel getResource(Game game) {
+        GameResponseDto gameResponseDto = GameMapper.Instance.toResponseDto(game);
+        WebMvcLinkBuilder selfLink = linkTo(GameController.class).slash(gameResponseDto.getId());
+        EntityModel resource = EntityModel.of(gameResponseDto);
         resource.add(selfLink.withRel("query-content"));
 
         return resource;

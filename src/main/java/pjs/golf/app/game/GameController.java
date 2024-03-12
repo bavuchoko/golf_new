@@ -1,8 +1,6 @@
 package pjs.golf.app.game;
 
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -14,18 +12,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import pjs.golf.app.game.dto.GameRequestDto;
-import pjs.golf.app.game.dto.GameResponseDto;
 import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.game.service.GameService;
 import pjs.golf.app.member.entity.Member;
 import pjs.golf.common.CurrentUser;
 import pjs.golf.common.SearchDto;
 import pjs.golf.common.WebCommon;
+import pjs.golf.common.exception.InCorrectStatusCustomException;
 import pjs.golf.common.exception.NoSuchDataException;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
+import pjs.golf.common.exception.PermissionLimitedCustomException;
 
 @RestController
 @RequestMapping(value = "/api/game", produces = "application/json;charset=UTF-8")
@@ -60,7 +55,7 @@ public class GameController {
     @GetMapping("{id}")
     public ResponseEntity getGame(@PathVariable Long id, @CurrentUser Member member) {
         try {
-            EntityModel game = gameService.getGameInfo(id, member);
+            EntityModel game = gameService.getGameResource(id, member);
             return new ResponseEntity(game, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(e, HttpStatus.NO_CONTENT);
@@ -98,10 +93,18 @@ public class GameController {
     /**
      * 참가하기
      */
-    @PutMapping("/join/{id}")
+    @PutMapping("/enroll/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity joinGame(@PathVariable Long id) {
-        return null;
+    public ResponseEntity joinGame(
+            @PathVariable Long id,
+            @CurrentUser Member member) {
+        try {
+            EntityModel resource = gameService.enrollGame(id, member);
+
+            return ResponseEntity.ok().body(resource); // 200
+        } catch (Exception e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     /**
@@ -109,17 +112,43 @@ public class GameController {
      */
     @PutMapping("/expel/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity expelPlayer(@PathVariable String id) {
-        return null;
+    public ResponseEntity expelPlayer(
+            @PathVariable Long id,
+            @CurrentUser Member member,
+            @RequestBody Member target) {
+        if (member == null) {
+            return ResponseEntity.badRequest().body("로그인이 필요 합니다.");
+        }
+        try {
+
+            EntityModel resource = gameService.getGameResource(id, member);
+            gameService.expelPlayer(id, member, target);
+            return new ResponseEntity(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
     /**
      * 경기시작
      */
-    @PutMapping("/start/{id}")
+    @PutMapping("/play/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity startGame(@PathVariable String id) {
-        return null;
+    public ResponseEntity startGame(
+            @PathVariable Long id,
+            @CurrentUser Member member
+    ) {
+        try {
+            gameService.startGame(id, member, 1);
+
+            EntityModel resource = gameService.getGameResource(id, member);
+
+            return new  ResponseEntity(resource, HttpStatus.OK);
+        } catch (PermissionLimitedCustomException | InCorrectStatusCustomException | NoSuchDataException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -127,7 +156,19 @@ public class GameController {
      */
     @PutMapping("/end/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity ebdGame(@PathVariable String id) {
-        return null;
+    public ResponseEntity ebdGame(
+            @PathVariable Long id,
+            @CurrentUser Member member
+    ) {
+        try {
+            EntityModel resource = gameService.endGame(id, member);
+            return new ResponseEntity(resource,HttpStatus.OK);
+        } catch (PermissionLimitedCustomException | NoSuchDataException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
+
 }
