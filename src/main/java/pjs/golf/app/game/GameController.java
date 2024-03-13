@@ -77,17 +77,27 @@ public class GameController {
         if (errors.hasErrors()) {
             return WebCommon.badRequest(errors, this.getClass());
         }
-        EntityModel resource = gameService.createGame(gameRequestDto, member);
-        return new ResponseEntity(resource, HttpStatus.OK);
+        try {
+            EntityModel resource = gameService.createGame(gameRequestDto, member);
+            return new ResponseEntity(resource, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
+
+
 
     /**
      * 경기삭제
      * */
-    @DeleteMapping
+    @DeleteMapping("{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity deleteGame() {
-        return null;
+    public ResponseEntity deleteGame(
+            @PathVariable Long id,
+            @CurrentUser Member member
+    ) {
+        gameService.removeGame(id, member);
+        return ResponseEntity.ok().build();
     }
 
     /**

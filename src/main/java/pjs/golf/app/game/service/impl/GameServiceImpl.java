@@ -31,6 +31,7 @@ import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.common.exception.PermissionLimitedCustomException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -75,12 +76,24 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional
+    public void removeGame(Long id, Member member) {
+        Game game = gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
+        if(member.equals(game.getHost())){
+            game.removeGame();
+        }else {
+            throw new PermissionLimitedCustomException("권한이 없습니다.");
+        }
+    }
+
+    @Override
     public EntityModel createGame(GameRequestDto gameRequestDto, Member member) {
         List<Member> players = this.intiPlayer(gameRequestDto, member);
+        gameRequestDto.setPlayers(players);
+
         gameRequestDto.setHost(member);
         gameRequestDto.setPlayDate(LocalDateTime.now());
         gameRequestDto.setStatus(GameStatus.OPEN);
-        gameRequestDto.setPlayers(players);
         Game game = gameJpaRepository.save(GameMapper.Instance.toEntity(gameRequestDto));
         return getResource(game, member);
     }
@@ -146,37 +159,41 @@ public class GameServiceImpl implements GameService {
     }
 
     private List<Member> intiPlayer(GameRequestDto gameRequestDto, Member member) {
-        String[] names = gameRequestDto.getNames();
-        //기존에 temp_이름 으로 존재하는 Account 엔티티들
-        List<Member> registeredAccounts = memberService.getTempUsersByUserNames(Arrays.asList(names));
+        String[] names = gameRequestDto.getNames(); // ** host는 names에 포함되어 있으면 안된다.
+        List<Member> players = new ArrayList<>();
+        if(names.length>3){
+            throw new IllegalArgumentException("최대 4명이 경기할 수 있습니다.");
+        }
+        if(names.length>0) {    // 경기 생성시 참가지 이름 입력한 경우
 
-        //등록되어 있지 않은 이름 -> temp_이름 으로 Account 생성해주어야 할 이름들
-        List<String> unRegisteredUsernames =  Arrays.stream(names).filter(
-                name -> registeredAccounts.stream()
-                        .noneMatch(account -> account.getName().equals(name))).collect(Collectors.toList());
+            // 1. 기존에 temp_이름 으로 존재하는 계정들
+            List<Member> registeredAccounts = memberService.getTempUsersByUserNames(Arrays.asList(names));
 
-        //unRegisteredUsernames 로 새로 생성해준 Account 들
-        List<Member> newAccount = memberService.createUserIfDosenExist(unRegisteredUsernames);
+            // 2. temp_이름 으로 계정등록 안된 이름들
+            List<String> unRegisteredUsernames = Arrays.stream(names).filter(
+                    name -> registeredAccounts.stream()
+                            .noneMatch(account -> account.getName().equals(name))).collect(Collectors.toList());
 
-        //등록 & 생성 된 account 들 합침.
-        registeredAccounts.addAll(newAccount);
-        //클라이언트가 입력한 이름 순서대로 정렬을 편하게 하기 위해 registeredAccounts 리스트를 이름을 기준으로 매핑한 맵 생성
-        Map<String, Member> accountMap = registeredAccounts.stream()
-                .collect(Collectors.toMap(Member::getName, account -> account));
+            // 2-1.새롭게 temp_이름으로 계정 생성함
+            List<Member> newAccount = memberService.createUserIfDosenExist(unRegisteredUsernames);
 
-        //처음 입력한 순서대로 정렬해줌. :: Account 객체이며 클라이언트가 입력한 순서대로 정렬된 리스트
-        List<Member> players = Arrays.stream(names)
-                .map(accountMap::get).collect(Collectors.toList());
+            // 3. 기존에 있거 새로 생성된 temp_이름 계청 합침.
+            registeredAccounts.addAll(newAccount);
 
-        //등록자 자동 참가 => 입력한 이름중 첫번째 사람을 제외하지 않으면
-        if(players.size() < 4){
-            players = players.subList(1,players.size());
+            // 4. 이름:계정 을 key:value 의 map으로 구성
+            Map<String, Member> accountMap = registeredAccounts.stream()
+                    .collect(Collectors.toMap(Member::getName, account -> account));
+
+            // 5. 처음 입력한 name 배열의 순서대로 accountMap 에서 계정을 꺼냄
+             players = Arrays.stream(names)
+                    .map(accountMap::get).collect(Collectors.toList());
+
             players.add(0, member);
-        }else if(players.size() >= 4){
-            players = players.subList(1,4);
-            players.add(0, member);
+        }else{          //참가자 입력 없이 생성자 혼자 경기 생성한 경우
+            players.add(member);
         }
         return players;
+
     }
 
 

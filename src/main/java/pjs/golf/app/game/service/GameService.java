@@ -26,4 +26,6 @@ public interface GameService {
     Game getGameInfo(Long id);
 
     EntityModel endGame(Long id, Member member);
+
+    void removeGame(Long id, Member member);
 }

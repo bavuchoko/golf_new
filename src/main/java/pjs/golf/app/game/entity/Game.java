@@ -54,4 +54,8 @@ public class Game {
     public void changeStatus(GameStatus gameStatus) {
         this.status = gameStatus;
     }
+
+    public void removeGame() {
+        this.isRemoved =true;
+    }
 }
