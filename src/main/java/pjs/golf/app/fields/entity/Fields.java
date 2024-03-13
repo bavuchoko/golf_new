@@ -24,6 +24,9 @@ public class Fields {
     private String address;
     private String addressDetail;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createDate;
+
     @ManyToOne
     @JoinColumn(name = "register")
     private Member register;

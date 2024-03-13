@@ -15,4 +15,6 @@ public class SearchDto {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
+    private String SearchTxt;
+
 }

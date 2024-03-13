@@ -23,5 +23,5 @@ public class FieldsResponseDto {
     private String address;
     private String addressDetail;
     private MemberResponseDto register;
-    private LocalDateTime playDate;
+    private LocalDateTime createDate;
 }

@@ -20,5 +20,5 @@ public class FieldsRequestDto {
     private String address;
     private String addressDetail;
     private Member register;
-    private LocalDateTime playDate;
+    private LocalDateTime createDate;
 }
