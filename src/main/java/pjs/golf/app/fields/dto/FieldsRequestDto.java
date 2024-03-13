@@ -21,4 +21,5 @@ public class FieldsRequestDto {
     private String addressDetail;
     private Member register;
     private LocalDateTime createDate;
+    private boolean isRemoved;
 }

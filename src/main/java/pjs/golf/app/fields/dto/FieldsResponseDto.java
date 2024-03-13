@@ -24,4 +24,5 @@ public class FieldsResponseDto {
     private String addressDetail;
     private MemberResponseDto register;
     private LocalDateTime createDate;
+    private boolean isRemoved;
 }

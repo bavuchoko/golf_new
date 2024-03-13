@@ -16,4 +16,8 @@ public interface FieldsService {
     EntityModel createField(FieldsRequestDto fields, Member member);
 
     EntityModel getFieldInfo(Long id, Member member);
+
+    EntityModel updateFields(FieldsRequestDto fieldsDto, Member member);
+
+    void removeFields(Long id, Member member);
 }

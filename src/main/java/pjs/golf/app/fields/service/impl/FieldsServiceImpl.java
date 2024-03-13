@@ -20,6 +20,7 @@ import pjs.golf.app.fields.service.FieldsService;
 import pjs.golf.app.member.entity.Member;
 import pjs.golf.common.SearchDto;
 import pjs.golf.common.exception.NoSuchDataException;
+import pjs.golf.common.exception.PermissionLimitedCustomException;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -44,6 +45,28 @@ public class FieldsServiceImpl implements FieldsService {
         Fields fields = fieldsJpaRepository.findById(id)
                 .orElseThrow(()->new NoSuchDataException(""));
         return this.getResource(fields, member);
+    }
+
+    @Override
+    @Transactional
+    public EntityModel updateFields(FieldsRequestDto fieldsDto, Member member) {
+        Fields fields = fieldsJpaRepository.findById(fieldsDto.getId()).orElseThrow(()->new NoSuchDataException(""));
+        if (fields.getRegister().equals(member)) {
+            fields= FieldsMapper.Instance.toEntity(fieldsDto);
+        }else{
+            throw new PermissionLimitedCustomException("권한이 없습니다.");
+        }
+        return this.getResource(fields, member);
+    }
+
+    @Override
+    public void removeFields(Long id, Member member) {
+        Fields fields = fieldsJpaRepository.findById(id).orElseThrow(()->new NoSuchDataException(""));
+        if (fields.getRegister().equals(member)) {
+           fields.removeField();
+        }else{
+            throw new PermissionLimitedCustomException("권한이 없습니다.");
+        }
     }
 
     @Override

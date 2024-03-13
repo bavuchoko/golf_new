@@ -8,6 +8,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +23,9 @@ import pjs.golf.common.CurrentUser;
 import pjs.golf.common.SearchDto;
 import pjs.golf.common.WebCommon;
 import pjs.golf.common.exception.NoSuchDataException;
+
+import java.net.URI;
+import java.time.LocalDateTime;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -86,6 +90,48 @@ public class FieldsController {
         }catch (Exception e){
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * 필드 수정
+     * */
+    @PutMapping
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity updatetField(
+            @RequestBody FieldsRequestDto fieldsDto,
+            Errors errors,
+            @CurrentUser Member member){
+
+        if (errors.hasErrors()) {
+            return WebCommon.badRequest(errors, this.getClass());
+        }
+
+        try {
+            EntityModel resource = fieldService.updateFields(fieldsDto, member);
+            return new ResponseEntity(resource, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+    /**
+     * 필드 삭제
+     * */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity deleteField(
+            @PathVariable Long id,
+            @CurrentUser Member member){
+
+        try {
+            fieldService.removeFields(id, member);
+            return new ResponseEntity(HttpStatus.OK);
+        }catch (NoSuchDataException e){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
 }
