@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Service;
 import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.game.entity.QGame;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.common.SearchDto;
 import pjs.golf.common.jpa.QuerydslCommonMethod;
 
@@ -31,10 +31,10 @@ public class GameQuerydslSupport extends QuerydslRepositorySupport {
 
 
 
-    public Page<Game> getGameListBetweenDate(SearchDto search, Pageable pageable, Member member, boolean isRemoved) {
+    public Page<Game> getGameListBetweenDate(SearchDto search, Pageable pageable, Account account, boolean isRemoved) {
 
         JPAQuery<Game> query= queryFactory.selectFrom(game).where(
-                        getBySearchOption(search, member, isRemoved)
+                        getBySearchOption(search, account, isRemoved)
                 )
                 .orderBy(QuerydslCommonMethod.getOrderList(pageable.getSort(), Game.class).stream().toArray(OrderSpecifier[]::new))
                 .limit(pageable.getPageSize())
@@ -43,7 +43,7 @@ public class GameQuerydslSupport extends QuerydslRepositorySupport {
         return new PageImpl<>(result,pageable, result.size());
     }
 
-    private BooleanBuilder getBySearchOption(SearchDto searchDto, Member member, Boolean isRemoved) {
+    private BooleanBuilder getBySearchOption(SearchDto searchDto, Account account, Boolean isRemoved) {
         BooleanBuilder builder = new BooleanBuilder();
         return builder
 

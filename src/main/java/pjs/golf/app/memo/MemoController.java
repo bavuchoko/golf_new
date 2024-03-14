@@ -1,19 +1,14 @@
 package pjs.golf.app.memo;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pjs.golf.app.fields.entity.Fields;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.memo.dto.MemoRequestDto;
 import pjs.golf.app.memo.service.MemoService;
 import pjs.golf.common.CurrentUser;
-import pjs.golf.common.SearchDto;
 
 import java.util.List;
 
@@ -31,9 +26,9 @@ public class MemoController {
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity getFieldList(
             @PathVariable Long id,
-            @CurrentUser Member member
+            @CurrentUser Account account
             ) {
-        List resources = memoService.getMemosByFieldAndUser(id, member);
+        List resources = memoService.getMemosByFieldAndUser(id, account);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
 
@@ -45,9 +40,9 @@ public class MemoController {
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity createMemo(
             @RequestBody MemoRequestDto memoRequestDto,
-            @CurrentUser Member member
+            @CurrentUser Account account
     ) {
-        List resources = memoService.createOrUpdateMemo(memoRequestDto, member);
+        List resources = memoService.createOrUpdateMemo(memoRequestDto, account);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
     
@@ -58,9 +53,9 @@ public class MemoController {
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity updateMemo(
             @RequestBody MemoRequestDto memoRequestDto,
-            @CurrentUser Member member
+            @CurrentUser Account account
     ) {
-        List resources = memoService.createOrUpdateMemo(memoRequestDto, member);
+        List resources = memoService.createOrUpdateMemo(memoRequestDto, account);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
 
@@ -72,9 +67,9 @@ public class MemoController {
     public ResponseEntity deleteMemo(
             @PathVariable Long memoId,
             @PathVariable Long fieldId,
-            @CurrentUser Member member
+            @CurrentUser Account account
     ) {
-        List resources = memoService.deleteMemo(memoId, fieldId, member);
+        List resources = memoService.deleteMemo(memoId, fieldId, account);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
     

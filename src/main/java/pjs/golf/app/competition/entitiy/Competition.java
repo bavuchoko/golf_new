@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import pjs.golf.app.fields.entity.Fields;
 import pjs.golf.app.game.entity.Game;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +25,7 @@ public class Competition {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "host")
-    private Member host;
+    private Account host;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime playDate;
@@ -36,7 +36,7 @@ public class Competition {
 
     @OneToMany
     @JoinTable(name = "competitors")
-    private List<Member> players;
+    private List<Account> players;
 
     @OneToMany
     @JoinColumn(name = "competition")

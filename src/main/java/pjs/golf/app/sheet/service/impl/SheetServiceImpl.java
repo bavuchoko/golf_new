@@ -4,8 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pjs.golf.app.game.entity.Game;
-import pjs.golf.app.game.service.GameService;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.sheet.dto.SheetRequestDto;
 import pjs.golf.app.sheet.entity.Sheet;
 import pjs.golf.app.sheet.repository.SheetJpaRepository;
@@ -25,9 +24,9 @@ public class SheetServiceImpl implements SheetService {
 
     @Override
     @Transactional
-    public List updateScore(SheetRequestDto sheetRequestDto, Game game, Member member) {
+    public List updateScore(SheetRequestDto sheetRequestDto, Game game, Account account) {
 
-        if(member.equals(game.getHost())) {
+        if(account.equals(game.getHost())) {
             Sheet sheet = sheetJpaRepository.findByGameAndPlayerAndRound(game, sheetRequestDto.getPlayer(), sheetRequestDto.getRound())
                             .orElseThrow(()-> new NoSuchDataException(""));
             sheet.updateScore(sheetRequestDto.getScore());
@@ -37,9 +36,9 @@ public class SheetServiceImpl implements SheetService {
     }
 
     @Override
-    public List nextRound(Member member, Game game, int round) {
-        List<Member> players = game.getPlayers();
-        if(game.getHost().equals(member)) {
+    public List nextRound(Account account, Game game, int round) {
+        List<Account> players = game.getPlayers();
+        if(game.getHost().equals(account)) {
             players.forEach(e -> {
                 Sheet sheet = Sheet.builder()
                         .game(game)

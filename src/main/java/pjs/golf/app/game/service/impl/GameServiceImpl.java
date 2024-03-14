@@ -8,8 +8,6 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pjs.golf.app.game.GameController;
@@ -21,8 +19,8 @@ import pjs.golf.app.game.mapper.GameMapper;
 import pjs.golf.app.game.repository.GameJpaRepository;
 import pjs.golf.app.game.repository.querydsl.GameQuerydslSupport;
 import pjs.golf.app.game.service.GameService;
-import pjs.golf.app.member.entity.Member;
-import pjs.golf.app.member.service.MemberService;
+import pjs.golf.app.account.entity.Account;
+import pjs.golf.app.account.service.AccountService;
 import pjs.golf.app.sheet.service.SheetService;
 import pjs.golf.common.SearchDto;
 import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
@@ -45,19 +43,19 @@ public class GameServiceImpl implements GameService {
 
     private final GameJpaRepository gameJpaRepository;
     private final GameQuerydslSupport gameQuerydslSupport;
-    private final MemberService memberService;
+    private final AccountService accountService;
     private final SheetService sheetService;
 
     @Override
-    public CollectionModel getGameList(SearchDto search, Pageable pageable, PagedResourcesAssembler<Game> assembler, Member member) {
-        Page<Game> games = gameQuerydslSupport.getGameListBetweenDate(search, pageable, member, false);
-    return  this.getPageResources(assembler, games, member);
+    public CollectionModel getGameList(SearchDto search, Pageable pageable, PagedResourcesAssembler<Game> assembler, Account account) {
+        Page<Game> games = gameQuerydslSupport.getGameListBetweenDate(search, pageable, account, false);
+    return  this.getPageResources(assembler, games, account);
     }
 
     @Override
-    public EntityModel getGameResource(Long id, Member member) {
+    public EntityModel getGameResource(Long id, Account account) {
         Game game = gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
-        return getResource(game, member);
+        return getResource(game, account);
     }
     @Override
     public Game getGameInfo(Long id) {
@@ -65,21 +63,21 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public EntityModel endGame(Long id, Member member) {
+    public EntityModel endGame(Long id, Account account) {
         Game game = gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
-        if(member.equals(game.getHost())){
+        if(account.equals(game.getHost())){
             game.changeStatus(GameStatus.END);
         }else {
             throw new PermissionLimitedCustomException("권한이 없습니다.");
         }
-        return getResource(game, member);
+        return getResource(game, account);
     }
 
     @Override
     @Transactional
-    public void removeGame(Long id, Member member) {
+    public void removeGame(Long id, Account account) {
         Game game = gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
-        if(member.equals(game.getHost())){
+        if(account.equals(game.getHost())){
             game.removeGame();
         }else {
             throw new PermissionLimitedCustomException("권한이 없습니다.");
@@ -87,28 +85,28 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public EntityModel createGame(GameRequestDto gameRequestDto, Member member) {
-        List<Member> players = this.intiPlayer(gameRequestDto, member);
+    public EntityModel createGame(GameRequestDto gameRequestDto, Account account) {
+        List<Account> players = this.intiPlayer(gameRequestDto, account);
         gameRequestDto.setPlayers(players);
 
-        gameRequestDto.setHost(member);
+        gameRequestDto.setHost(account);
         gameRequestDto.setPlayDate(LocalDateTime.now());
         gameRequestDto.setStatus(GameStatus.OPEN);
         Game game = gameJpaRepository.save(GameMapper.Instance.toEntity(gameRequestDto));
-        return getResource(game, member);
+        return getResource(game, account);
     }
 
     @Override
-    public EntityModel enrollGame(Long id, Member member) {
+    public EntityModel enrollGame(Long id, Account account) {
         Game game= gameJpaRepository.findById(id).orElseThrow(()->new NoSuchDataException("") );
         if(game.getPlayers().size()<4 && game.getStatus().equals(GameStatus.OPEN)) {
             List players = game.getPlayers();
-            players.stream().filter(player -> player.equals(member))
+            players.stream().filter(player -> player.equals(account))
                     .findFirst()
                     .ifPresent(p -> {
                         throw new AlreadyExistSuchDataCustomException("이미 참가중입니다.");
                     });
-            game.enrollGame(game, member);
+            game.enrollGame(game, account);
         }else {
             throw new InCorrectStatusCustomException("요청을 처리할 수 없습니다.");
         }
@@ -119,7 +117,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void expelPlayer(Long id, Member member, Member target) {
+    public void expelPlayer(Long id, Account account, Account target) {
         Game entity = gameJpaRepository.findById(id).orElseThrow(
                 ()-> new NoSuchDataException("")
         );
@@ -129,24 +127,24 @@ public class GameServiceImpl implements GameService {
         if(entity.getHost().equals(target)){
             throw new InCorrectStatusCustomException("hostExpelException");
         }
-        if(entity.getHost().equals(member)) {
+        if(entity.getHost().equals(account)) {
             entity.getPlayers().remove(target);
         }else{
-            if(!member.equals(target))  throw new InCorrectStatusCustomException("selfExpelAllowedException");
+            if(!account.equals(target))  throw new InCorrectStatusCustomException("selfExpelAllowedException");
             else entity.getPlayers().remove(target);
         }
     }
 
     @Override
-    public void startGame(Long id, Member member, int round) throws Exception {
+    public void startGame(Long id, Account account, int round) throws Exception {
         Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
                 new NoSuchDataException("없는 데이터")
         );
         try {
             if(gameEntity.getPlayers().size()>1){
-                if (gameEntity.getHost().equals(member)) {
+                if (gameEntity.getHost().equals(account)) {
                     gameEntity.changeStatus(GameStatus.PLAYING);
-                    sheetService.nextRound(member, gameEntity, round);
+                    sheetService.nextRound(account, gameEntity, round);
                 } else {
                     throw new PermissionLimitedCustomException("권한이 없습니다.");
                 }
@@ -158,50 +156,50 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private List<Member> intiPlayer(GameRequestDto gameRequestDto, Member member) {
+    private List<Account> intiPlayer(GameRequestDto gameRequestDto, Account account) {
         String[] names = gameRequestDto.getNames(); // ** host는 names에 포함되어 있으면 안된다.
-        List<Member> players = new ArrayList<>();
+        List<Account> players = new ArrayList<>();
         if(names.length>3){
             throw new IllegalArgumentException("최대 4명이 경기할 수 있습니다.");
         }
         if(names.length>0) {    // 경기 생성시 참가지 이름 입력한 경우
 
             // 1. 기존에 temp_이름 으로 존재하는 계정들
-            List<Member> registeredAccounts = memberService.getTempUsersByUserNames(Arrays.asList(names));
+            List<Account> registeredAccounts = accountService.getTempUsersByUserNames(Arrays.asList(names));
 
             // 2. temp_이름 으로 계정등록 안된 이름들
             List<String> unRegisteredUsernames = Arrays.stream(names).filter(
                     name -> registeredAccounts.stream()
-                            .noneMatch(account -> account.getName().equals(name))).collect(Collectors.toList());
+                            .noneMatch(each -> each.getName().equals(name))).collect(Collectors.toList());
 
             // 2-1.새롭게 temp_이름으로 계정 생성함
-            List<Member> newAccount = memberService.createUserIfDosenExist(unRegisteredUsernames);
+            List<Account> newAccount = accountService.createUserIfDosenExist(unRegisteredUsernames);
 
             // 3. 기존에 있거 새로 생성된 temp_이름 계청 합침.
             registeredAccounts.addAll(newAccount);
 
             // 4. 이름:계정 을 key:value 의 map으로 구성
-            Map<String, Member> accountMap = registeredAccounts.stream()
-                    .collect(Collectors.toMap(Member::getName, account -> account));
+            Map<String, Account> accountMap = registeredAccounts.stream()
+                    .collect(Collectors.toMap(Account::getName, each -> each));
 
             // 5. 처음 입력한 name 배열의 순서대로 accountMap 에서 계정을 꺼냄
              players = Arrays.stream(names)
                     .map(accountMap::get).collect(Collectors.toList());
 
-            players.add(0, member);
+            players.add(0, account);
         }else{          //참가자 입력 없이 생성자 혼자 경기 생성한 경우
-            players.add(member);
+            players.add(account);
         }
         return players;
 
     }
 
 
-    public EntityModel getResource(Game game, Member member) {
+    public EntityModel getResource(Game game, Account account) {
         GameResponseDto gameResponseDto = GameMapper.Instance.toResponseDto(game);
         WebMvcLinkBuilder selfLink = linkTo(GameController.class).slash(gameResponseDto.getId());
         EntityModel resource = EntityModel.of(gameResponseDto);
-        if(member != null && gameResponseDto.getHost().equals(member)){
+        if(account != null && gameResponseDto.getHost().equals(account)){
             resource.add(linkTo(GameController.class).slash("score").withRel("update"));
         }
         resource.add(selfLink.withRel("query-content"));
@@ -218,11 +216,11 @@ public class GameServiceImpl implements GameService {
         return resource;
     }
 
-    public CollectionModel getPageResources(PagedResourcesAssembler<Game> assembler, Page<Game> game, Member member) {
+    public CollectionModel getPageResources(PagedResourcesAssembler<Game> assembler, Page<Game> game, Account account) {
         return assembler.toModel(game, entity -> {
             EntityModel<GameResponseDto> entityModel = EntityModel.of(GameMapper.Instance.toResponseDto(entity))
                     .add(linkTo(GameController.class).slash(entity.getId()).withSelfRel());
-            if (member != null && entity.getHost().equals(member)) {
+            if (account != null && entity.getHost().equals(account)) {
                 entityModel.add(linkTo(GameController.class).slash(entity.getId()).withRel("update"));
             }
             return entityModel.add(Link.of("/docs/asciidoc/index.html#create-game-api").withRel("profile"));

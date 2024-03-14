@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.game.service.GameService;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.common.CurrentUser;
 import pjs.golf.common.SearchDto;
 import pjs.golf.common.WebCommon;
@@ -36,7 +36,7 @@ public class GameController {
     @GetMapping
     public ResponseEntity getGameList(
             Pageable pageable,
-            @CurrentUser Member member,
+            @CurrentUser Account account,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
             PagedResourcesAssembler<Game> assembler
@@ -45,7 +45,7 @@ public class GameController {
                 .startDate((WebCommon.localDateToLocalDateTime(startDate,"startDate")))
                 .endDate((WebCommon.localDateToLocalDateTime(endDate,"endDate")))
                 .build();
-        CollectionModel resources =  gameService.getGameList(search, pageable, assembler, member);
+        CollectionModel resources =  gameService.getGameList(search, pageable, assembler, account);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
 
@@ -53,9 +53,9 @@ public class GameController {
      * 단일조회
      * */
     @GetMapping("{id}")
-    public ResponseEntity getGame(@PathVariable Long id, @CurrentUser Member member) {
+    public ResponseEntity getGame(@PathVariable Long id, @CurrentUser Account account) {
         try {
-            EntityModel game = gameService.getGameResource(id, member);
+            EntityModel game = gameService.getGameResource(id, account);
             return new ResponseEntity(game, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(e, HttpStatus.NO_CONTENT);
@@ -71,14 +71,14 @@ public class GameController {
     public ResponseEntity hostGame(
             @RequestBody GameRequestDto gameRequestDto,
             Errors errors,
-            @CurrentUser Member member
+            @CurrentUser Account account
             ) {
 
         if (errors.hasErrors()) {
             return WebCommon.badRequest(errors, this.getClass());
         }
         try {
-            EntityModel resource = gameService.createGame(gameRequestDto, member);
+            EntityModel resource = gameService.createGame(gameRequestDto, account);
             return new ResponseEntity(resource, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -94,9 +94,9 @@ public class GameController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity deleteGame(
             @PathVariable Long id,
-            @CurrentUser Member member
+            @CurrentUser Account account
     ) {
-        gameService.removeGame(id, member);
+        gameService.removeGame(id, account);
         return ResponseEntity.ok().build();
     }
 
@@ -107,11 +107,11 @@ public class GameController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity joinGame(
             @PathVariable Long id,
-            @CurrentUser Member member) {
+            @CurrentUser Account account) {
         try {
-            EntityModel resource = gameService.enrollGame(id, member);
+            EntityModel resource = gameService.enrollGame(id, account);
 
-            return ResponseEntity.ok().body(resource); // 200
+            return ResponseEntity.ok().body(resource);
         } catch (Exception e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -124,15 +124,15 @@ public class GameController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity expelPlayer(
             @PathVariable Long id,
-            @CurrentUser Member member,
-            @RequestBody Member target) {
-        if (member == null) {
+            @CurrentUser Account account,
+            @RequestBody Account target) {
+        if (account == null) {
             return ResponseEntity.badRequest().body("로그인이 필요 합니다.");
         }
         try {
 
-            EntityModel resource = gameService.getGameResource(id, member);
-            gameService.expelPlayer(id, member, target);
+            EntityModel resource = gameService.getGameResource(id, account);
+            gameService.expelPlayer(id, account, target);
             return new ResponseEntity(HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
@@ -146,12 +146,12 @@ public class GameController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity startGame(
             @PathVariable Long id,
-            @CurrentUser Member member
+            @CurrentUser Account account
     ) {
         try {
-            gameService.startGame(id, member, 1);
+            gameService.startGame(id, account, 1);
 
-            EntityModel resource = gameService.getGameResource(id, member);
+            EntityModel resource = gameService.getGameResource(id, account);
 
             return new  ResponseEntity(resource, HttpStatus.OK);
         } catch (PermissionLimitedCustomException | InCorrectStatusCustomException | NoSuchDataException e) {
@@ -168,10 +168,10 @@ public class GameController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity ebdGame(
             @PathVariable Long id,
-            @CurrentUser Member member
+            @CurrentUser Account account
     ) {
         try {
-            EntityModel resource = gameService.endGame(id, member);
+            EntityModel resource = gameService.endGame(id, account);
             return new ResponseEntity(resource,HttpStatus.OK);
         } catch (PermissionLimitedCustomException | NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);

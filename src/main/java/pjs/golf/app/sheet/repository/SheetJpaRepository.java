@@ -2,7 +2,7 @@ package pjs.golf.app.sheet.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import pjs.golf.app.game.entity.Game;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.sheet.entity.Sheet;
 
 import java.util.List;
@@ -12,5 +12,5 @@ public interface SheetJpaRepository extends JpaRepository<Sheet, Long> {
 
 
     List<Sheet> findAllByGame(Game game);
-    Optional<Sheet> findByGameAndPlayerAndRound(Game game, Member member, int round);
+    Optional<Sheet> findByGameAndPlayerAndRound(Game game, Account account, int round);
 }

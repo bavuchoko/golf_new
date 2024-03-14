@@ -1,4 +1,4 @@
-package pjs.golf.app.member.service.impl;
+package pjs.golf.app.account.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,15 +13,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import pjs.golf.app.member.dto.MemberAdapter;
-import pjs.golf.app.member.dto.MemberRequestDto;
-import pjs.golf.app.member.entity.Gender;
-import pjs.golf.app.member.entity.Member;
-import pjs.golf.app.member.entity.MemberRole;
-import pjs.golf.app.member.mapper.MemberMapper;
-import pjs.golf.app.member.repository.MemberJpaRepository;
-import pjs.golf.app.member.repository.querydsl.MemberQuerydslSupport;
-import pjs.golf.app.member.service.MemberService;
+import pjs.golf.app.account.entity.Gender;
+import pjs.golf.app.account.dto.AccountAdapter;
+import pjs.golf.app.account.dto.AccountRequestDto;
+import pjs.golf.app.account.entity.Account;
+import pjs.golf.app.account.entity.AccountRole;
+import pjs.golf.app.account.mapper.AccountMapper;
+import pjs.golf.app.account.repository.AccountJpaRepository;
+import pjs.golf.app.account.repository.querydsl.AccountQuerydslSupport;
+import pjs.golf.app.account.service.AccountService;
 import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
 import pjs.golf.config.token.TokenManager;
 import pjs.golf.config.token.TokenType;
@@ -33,24 +33,24 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService {
+public class AccountServiceImpl implements AccountService {
 
     private final PasswordEncoder passwordEncoder;
-    private final MemberJpaRepository memberJpaRepository;
-    private final MemberQuerydslSupport memberQuerydslSupport;
+    private final AccountJpaRepository accountJpaRepository;
+    private final AccountQuerydslSupport accountQuerydslSupport;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenManager tokenManager;
 
     @Override
-    public Member createMember(Member member) {
-        memberJpaRepository.findByUsername(member.getUsername()).ifPresent( e->{
+    public Account createAccount(Account account) {
+        accountJpaRepository.findByUsername(account.getUsername()).ifPresent( e->{
                 throw new AlreadyExistSuchDataCustomException("이미 존재하는 아이디 입니다.");});
-        member.overwritePassword(passwordEncoder.encode(member.getPassword()));
-        return this.memberJpaRepository.save(member);
+        account.overwritePassword(passwordEncoder.encode(account.getPassword()));
+        return this.accountJpaRepository.save(account);
     }
 
     @Override
-    public String authorize(MemberRequestDto account, HttpServletResponse response, HttpServletRequest request) throws BadCredentialsException {
+    public String authorize(AccountRequestDto account, HttpServletResponse response, HttpServletRequest request) throws BadCredentialsException {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(account.getUsername(),  account.getPassword());
 
@@ -88,30 +88,30 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return new MemberAdapter(memberJpaRepository.findByUsernameWithRoles(username)
+        return new AccountAdapter(accountJpaRepository.findByUsernameWithRoles(username)
                 .orElseThrow(()->new UsernameNotFoundException(username)));
     }
 
     @Override
     public List getTempUsersByUserNames(List names) {
         //id가 temp_이름  인 사람들
-        return memberQuerydslSupport.getTempUsersByUserNames(names);
+        return accountQuerydslSupport.getTempUsersByUserNames(names);
     }
 
     @Override
     public List createUserIfDosenExist(List<String> names) {
         List tempUsers = names.stream()
-                .map(e -> MemberMapper.Instance.toEntity(MemberRequestDto.builder()
+                .map(e -> AccountMapper.Instance.toEntity(AccountRequestDto.builder()
                         .name(e)
                         .password(this.passwordEncoder.encode("temp_xxaareddfef"))
                         .username("temp_"+e)
                         .birth("6001011")
                         .gender(Gender.MALE)
                         .joinDate(LocalDateTime.now())
-                        .roles(Set.of(MemberRole.USER))
+                        .roles(Set.of(AccountRole.USER))
                         .build())).collect(Collectors.toList());
-        memberJpaRepository.saveAll(tempUsers);
-        return memberQuerydslSupport.getTempUsersByUserNames(names);
+        accountJpaRepository.saveAll(tempUsers);
+        return accountQuerydslSupport.getTempUsersByUserNames(names);
     }
 
 }

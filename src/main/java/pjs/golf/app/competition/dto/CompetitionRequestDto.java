@@ -3,7 +3,7 @@ package pjs.golf.app.competition.dto;
 import lombok.*;
 import pjs.golf.app.fields.entity.Fields;
 import pjs.golf.app.game.entity.Game;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,9 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 public class CompetitionRequestDto {
     private Long id;
-    private Member host;
+    private Account host;
     private LocalDateTime playDate;
     private Fields field;
-    private List<Member> players;
+    private List<Account> players;
     private List<Game> games;
 }

@@ -1,13 +1,10 @@
-package pjs.golf.app.member.dto;
+package pjs.golf.app.account.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import pjs.golf.app.member.entity.Gender;
-import pjs.golf.app.member.entity.MemberRole;
+import pjs.golf.app.account.entity.Gender;
+import pjs.golf.app.account.entity.AccountRole;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -17,7 +14,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberRequestDto {
+public class AccountRequestDto {
 
     private Integer id;
     @NotBlank(message = "아이디는 필수값입니다.")
@@ -30,6 +27,6 @@ public class MemberRequestDto {
     private Gender gender;
     private String portrait;
     private LocalDateTime joinDate;
-    private Set<MemberRole> roles;
+    private Set<AccountRole> roles;
 
 }

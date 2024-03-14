@@ -1,4 +1,4 @@
-package pjs.golf.app.member;
+package pjs.golf.app.account;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,11 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
-import pjs.golf.app.member.dto.MemberRequestDto;
-import pjs.golf.app.member.entity.Member;
-import pjs.golf.app.member.entity.MemberRole;
-import pjs.golf.app.member.mapper.MemberMapper;
-import pjs.golf.app.member.service.MemberService;
+import pjs.golf.app.account.dto.AccountRequestDto;
+import pjs.golf.app.account.dto.AccountRequestDto;
+import pjs.golf.app.account.entity.AccountRole;
+import pjs.golf.app.account.mapper.AccountMapper;
+import pjs.golf.app.account.service.AccountService;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.config.filter.TokenFilter;
 
 import java.util.Set;
@@ -22,28 +23,28 @@ import java.util.Set;
 @RestController
 @RequestMapping(value = "/api/user", produces = "application/json;charset=UTF-8")
 @RequiredArgsConstructor
-public class MemberController {
+public class AccountController {
 
-    private final MemberService memberService;
+    private final AccountService accountService;
 
     @PostMapping("/join")
     public ResponseEntity create(
-            @Valid @RequestBody MemberRequestDto memberRequestDto
+            @Valid @RequestBody AccountRequestDto accountRequestDto
     ) {
-        memberRequestDto.setRoles(Set.of(MemberRole.USER));
-        Member userAccount = MemberMapper.Instance.toEntity(memberRequestDto);
-        memberService.createMember(userAccount);
+        accountRequestDto.setRoles(Set.of(AccountRole.USER));
+        Account userAccount = AccountMapper.Instance.toEntity(accountRequestDto);
+        accountService.createAccount(userAccount);
         return ResponseEntity.ok().build();
     }
 
 
     @PostMapping("/login")
     public ResponseEntity authenticate(
-            @RequestBody MemberRequestDto memberRequestDto,
+            @RequestBody AccountRequestDto accountRequestDto,
             HttpServletResponse response,
             HttpServletRequest request) {
         try {
-            String accessToken = memberService.authorize(memberRequestDto,response, request);
+            String accessToken = accountService.authorize(accountRequestDto,response, request);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(TokenFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
             return new ResponseEntity(accessToken, httpHeaders, HttpStatus.OK);
@@ -56,7 +57,7 @@ public class MemberController {
     public ResponseEntity reissue(HttpServletRequest request) {
 
         try{
-            String accessToken = memberService.reIssueToken(request);
+            String accessToken = accountService.reIssueToken(request);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(TokenFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
 
@@ -68,6 +69,6 @@ public class MemberController {
     }
     @GetMapping("/logout")
     public void logout(HttpServletRequest req, HttpServletResponse res){
-        memberService.logout(req, res);
+        accountService.logout(req, res);
     }
 }

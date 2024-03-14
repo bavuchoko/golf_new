@@ -1,4 +1,4 @@
-package pjs.golf.app.member.entity;
+package pjs.golf.app.account.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of="id", callSuper = false)
-public class Member{
+public class Account{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
@@ -36,7 +36,7 @@ public class Member{
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
-    private Set<MemberRole> roles;
+    private Set<AccountRole> roles;
 
     public void overwritePassword(String password) {
         this.password = password;

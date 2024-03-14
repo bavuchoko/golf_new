@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import pjs.golf.app.fields.dto.FieldsRequestDto;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +30,7 @@ public class Fields {
 
     @ManyToOne
     @JoinColumn(name = "register")
-    private Member register;
+    private Account register;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime playDate;

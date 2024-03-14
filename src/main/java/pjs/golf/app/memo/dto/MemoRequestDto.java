@@ -2,7 +2,7 @@ package pjs.golf.app.memo.dto;
 
 import lombok.*;
 import pjs.golf.app.fields.entity.Fields;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 
 @Getter
 @Setter
@@ -14,5 +14,5 @@ public class MemoRequestDto {
     private String content;
     private Fields field;
     private int round;
-    private Member member;
+    private Account account;
 }

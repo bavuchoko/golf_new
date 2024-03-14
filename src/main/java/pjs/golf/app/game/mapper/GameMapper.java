@@ -6,11 +6,11 @@ import org.springframework.data.domain.Page;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.dto.GameResponseDto;
 import pjs.golf.app.game.entity.Game;
-import pjs.golf.app.member.mapper.MemberMapper;
+import pjs.golf.app.account.mapper.AccountMapper;
 
 import java.util.List;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {MemberMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {AccountMapper.class})
 public interface GameMapper {
 
     GameMapper Instance = Mappers.getMapper(GameMapper.class);
@@ -19,7 +19,7 @@ public interface GameMapper {
 
 
     @Named("gameResponse")
-    @Mapping(source = "host", target = "host", qualifiedByName = "memberResponse")
+    @Mapping(source = "host", target = "host", qualifiedByName = "accountResponse")
     GameResponseDto toResponseDto(Game game);
 
 

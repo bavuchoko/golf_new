@@ -3,7 +3,7 @@ package pjs.golf.app.memo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import pjs.golf.app.fields.entity.Fields;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 
 @Entity
 @Getter
@@ -25,6 +25,6 @@ public class Memo {
     private Fields field;
 
     @ManyToOne
-    @JoinColumn(name = "member")
-    private Member member;
+    @JoinColumn(name = "account")
+    private Account account;
 }

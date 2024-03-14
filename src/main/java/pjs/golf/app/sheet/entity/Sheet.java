@@ -3,7 +3,7 @@ package pjs.golf.app.sheet.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import pjs.golf.app.game.entity.Game;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 
 @Entity
 @Getter
@@ -22,7 +22,7 @@ public class Sheet {
 
     @ManyToOne
     @JoinColumn(name = "player")
-    private Member player;
+    private Account player;
     private int round;
     private int score;
 

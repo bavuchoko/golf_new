@@ -3,9 +3,8 @@ package pjs.golf.app.memo.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pjs.golf.app.fields.entity.Fields;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.memo.dto.MemoRequestDto;
-import pjs.golf.app.memo.entity.Memo;
 import pjs.golf.app.memo.mapper.MemoMapper;
 import pjs.golf.app.memo.repository.MemoJpaRepository;
 import pjs.golf.app.memo.service.MemoService;
@@ -18,22 +17,22 @@ public class MemoServiceImpl implements MemoService {
 
     private final MemoJpaRepository memoJpaRepository;
     @Override
-    public List getMemosByFieldAndUser(Long id, Member member) {
+    public List getMemosByFieldAndUser(Long id, Account account) {
         Fields fields = Fields.builder().id(id).build();
-        return memoJpaRepository.findByFieldAndMember(fields, member);
+        return memoJpaRepository.findByFieldAndAccount(fields, account);
     }
 
     @Override
-    public List createOrUpdateMemo(MemoRequestDto memoRequestDto, Member member) {
+    public List createOrUpdateMemo(MemoRequestDto memoRequestDto, Account account) {
         memoJpaRepository.save(MemoMapper.Instance.toEntity(memoRequestDto));
-        return memoJpaRepository.findByFieldAndMember(memoRequestDto.getField(), member);
+        return memoJpaRepository.findByFieldAndAccount(memoRequestDto.getField(), account);
     }
 
     @Override
-    public List deleteMemo(Long memoId,Long fieldId, Member member) {
+    public List deleteMemo(Long memoId,Long fieldId, Account account) {
 
         Fields fields = Fields.builder().id(fieldId).build();
         memoJpaRepository.deleteById(memoId);
-        return memoJpaRepository.findByFieldAndMember(fields, member);
+        return memoJpaRepository.findByFieldAndAccount(fields, account);
     }
 }

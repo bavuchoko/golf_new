@@ -18,8 +18,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import pjs.golf.app.member.dto.MemberAdapter;
-import pjs.golf.app.member.repository.MemberJpaRepository;
+import pjs.golf.app.account.dto.AccountAdapter;
+import pjs.golf.app.account.repository.AccountJpaRepository;
 import pjs.golf.config.utils.CookieUtil;
 
 import java.security.Key;
@@ -48,7 +48,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
     CookieUtil cookieUtil;
 
     @Autowired
-    MemberJpaRepository memberRepository;
+    AccountJpaRepository accountRepository;
 
 
     public TokenManagerImpl(
@@ -72,9 +72,9 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-        Long id = ((MemberAdapter)(authentication.getPrincipal())).getMember().getId();
-        String userName = ((MemberAdapter)(authentication.getPrincipal())).getMember().getUsername();
-        String name = ((MemberAdapter)(authentication.getPrincipal())).getMember().getName();
+        Long id = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getId();
+        String userName = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getUsername();
+        String name = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getName();
 
 
         long remainingMilliseconds = getRemainingMilliseconds();
@@ -132,7 +132,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         String username = claims.get("username", String.class);
 
 
-        UserDetails userDetails=  new MemberAdapter(memberRepository.findByUsernameWithRoles(username)
+        UserDetails userDetails=  new AccountAdapter(accountRepository.findByUsernameWithRoles(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username)));
 
         return new UsernamePasswordAuthenticationToken(userDetails, token, authorities);

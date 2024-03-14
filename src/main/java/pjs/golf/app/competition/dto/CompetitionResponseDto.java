@@ -3,7 +3,7 @@ package pjs.golf.app.competition.dto;
 import lombok.*;
 import pjs.golf.app.fields.dto.FieldsResponseDto;
 import pjs.golf.app.game.dto.GameResponseDto;
-import pjs.golf.app.member.dto.MemberResponseDto;
+import pjs.golf.app.account.dto.AccountResponseDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,9 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 public class CompetitionResponseDto {
     private Long id;
-    private MemberResponseDto host;
+    private AccountResponseDto host;
     private LocalDateTime playDate;
     private FieldsResponseDto field;
-    private List<MemberResponseDto> players;
+    private List<AccountResponseDto> players;
     private List<GameResponseDto> games;
 }

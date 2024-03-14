@@ -1,11 +1,12 @@
-package pjs.golf.app.member;
+package pjs.golf.app.account;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Description;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import pjs.golf.app.member.dto.MemberRequestDto;
-import pjs.golf.app.member.service.MemberService;
+import pjs.golf.app.account.dto.AccountRequestDto;
+import pjs.golf.app.account.service.AccountService;
 import pjs.golf.common.BaseControllerTest;
 import pjs.golf.config.AppProperties;
 
@@ -13,27 +14,28 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-class MemberControllerTest extends BaseControllerTest {
+class AccountControllerTest extends BaseControllerTest {
 
     @Autowired
     AppProperties appProperties;
     @Autowired
-    MemberService memberService;
+    AccountService accountService;
     @Autowired
     PasswordEncoder passwordEncoder;
     
     @Test
-    public void createMember() throws Exception {
+    @Description("회원가입")
+    public void createAccount() throws Exception {
 
-        MemberRequestDto member = MemberRequestDto.builder()
+        AccountRequestDto account = AccountRequestDto.builder()
                 .username(appProperties.getUserUsername())
                 .password(appProperties.getUserPassword())
                 .name(appProperties.getUserName())
                 .build();
 
-        mockMvc.perform(post("/api/user")
+        mockMvc.perform(post("/api/user/join")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(member)))
+                .content(objectMapper.writeValueAsString(account)))
                 .andExpect(status().isOk());
     }
 

@@ -17,12 +17,11 @@ import pjs.golf.app.fields.mapper.FieldsMapper;
 import pjs.golf.app.fields.respository.FieldsJpaRepository;
 import pjs.golf.app.fields.respository.querydsl.FieldsJpaQuerydslSupport;
 import pjs.golf.app.fields.service.FieldsService;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.common.SearchDto;
 import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.common.exception.PermissionLimitedCustomException;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -41,28 +40,28 @@ public class FieldsServiceImpl implements FieldsService {
     }
 
     @Override
-    public EntityModel getFieldInfo(Long id, Member member) {
+    public EntityModel getFieldInfo(Long id, Account account) {
         Fields fields = fieldsJpaRepository.findById(id)
                 .orElseThrow(()->new NoSuchDataException(""));
-        return this.getResource(fields, member);
+        return this.getResource(fields, account);
     }
 
     @Override
     @Transactional
-    public EntityModel updateFields(FieldsRequestDto fieldsDto, Member member) {
+    public EntityModel updateFields(FieldsRequestDto fieldsDto, Account account) {
         Fields fields = fieldsJpaRepository.findById(fieldsDto.getId()).orElseThrow(()->new NoSuchDataException(""));
-        if (fields.getRegister().equals(member)) {
+        if (fields.getRegister().equals(account)) {
             fields= FieldsMapper.Instance.toEntity(fieldsDto);
         }else{
             throw new PermissionLimitedCustomException("권한이 없습니다.");
         }
-        return this.getResource(fields, member);
+        return this.getResource(fields, account);
     }
 
     @Override
-    public void removeFields(Long id, Member member) {
+    public void removeFields(Long id, Account account) {
         Fields fields = fieldsJpaRepository.findById(id).orElseThrow(()->new NoSuchDataException(""));
-        if (fields.getRegister().equals(member)) {
+        if (fields.getRegister().equals(account)) {
            fields.removeField();
         }else{
             throw new PermissionLimitedCustomException("권한이 없습니다.");
@@ -70,22 +69,22 @@ public class FieldsServiceImpl implements FieldsService {
     }
 
     @Override
-    public EntityModel createField(FieldsRequestDto fieldsDto, Member member) {
-        fieldsDto.setRegister(member);
+    public EntityModel createField(FieldsRequestDto fieldsDto, Account account) {
+        fieldsDto.setRegister(account);
         fieldsDto.setCreateDate(LocalDateTime.now());
 
 
         Fields fields = fieldsJpaRepository.save(FieldsMapper.Instance.toEntity(fieldsDto));
 
-        return this.getResource(fields, member);
+        return this.getResource(fields, account);
     }
 
 
-    private EntityModel getResource(Fields fields, Member member) {
+    private EntityModel getResource(Fields fields, Account account) {
         WebMvcLinkBuilder selfLink = linkTo(FieldsController.class).slash(fields.getId());
         EntityModel resource = EntityModel.of(fields);
         resource.add(selfLink.withRel("self"));
-        if (fields.getRegister().equals(member)) {
+        if (fields.getRegister().equals(account)) {
             resource.add(selfLink.withRel("update-content"));
         }
         resource.add(Link.of("/docs/asciidoc/api.html#").withRel("profile"));

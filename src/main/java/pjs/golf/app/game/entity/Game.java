@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import pjs.golf.app.fields.entity.Fields;
 import pjs.golf.app.game.dto.GameStatus;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.sheet.entity.Sheet;
 
 import java.time.LocalDateTime;
@@ -25,7 +25,7 @@ public class Game {
 
     @ManyToOne
     @JoinColumn(name = "host")
-    private Member host;
+    private Account host;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime playDate;
@@ -34,9 +34,9 @@ public class Game {
     @JoinColumn(name = "filed")
     private Fields field;
 
-    @OneToMany
+    @ManyToMany
     @JoinTable(name = "game_players")
-    private List<Member> players;
+    private List<Account> players;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
@@ -47,8 +47,8 @@ public class Game {
     @Enumerated(EnumType.STRING)
     private GameStatus status;
 
-    public void enrollGame(Game game, Member member) {
-        this.players.add(member);
+    public void enrollGame(Game game, Account account) {
+        this.players.add(account);
     }
 
     public void changeStatus(GameStatus gameStatus) {

@@ -8,7 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.game.service.GameService;
-import pjs.golf.app.member.entity.Member;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.sheet.dto.SheetRequestDto;
 import pjs.golf.app.sheet.service.SheetService;
 import pjs.golf.common.CurrentUser;
@@ -31,10 +31,10 @@ public class SheetController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity updateScore(
             @RequestBody SheetRequestDto sheetRequestDto,
-            @CurrentUser Member member){
+            @CurrentUser Account account){
         try {
             Game game = gameService.getGameInfo(sheetRequestDto.getGame().getId());
-            List list = sheetService.updateScore(sheetRequestDto, game, member);
+            List list = sheetService.updateScore(sheetRequestDto, game, account);
             return new ResponseEntity(list,HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -49,10 +49,10 @@ public class SheetController {
     public ResponseEntity nextRound(
             @PathVariable Long id,
             int round,
-            @CurrentUser Member member){
+            @CurrentUser Account account){
         try {
             Game game = gameService.getGameInfo(id);
-            List list = sheetService.nextRound(member, game, round);
+            List list = sheetService.nextRound(account, game, round);
             return new ResponseEntity(list,HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);

@@ -3,6 +3,7 @@ package pjs.golf.app.game;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
@@ -10,12 +11,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.dto.GameResponseDto;
-import pjs.golf.app.member.dto.MemberRequestDto;
-import pjs.golf.app.member.dto.MemberResponseDto;
-import pjs.golf.app.member.entity.Gender;
-import pjs.golf.app.member.entity.MemberRole;
-import pjs.golf.app.member.mapper.MemberMapper;
-import pjs.golf.app.member.service.MemberService;
+import pjs.golf.app.account.dto.AccountRequestDto;
+import pjs.golf.app.account.dto.AccountResponseDto;
+import pjs.golf.app.account.entity.Gender;
+import pjs.golf.app.account.entity.AccountRole;
+import pjs.golf.app.account.mapper.AccountMapper;
+import pjs.golf.app.account.service.AccountService;
 import pjs.golf.common.BaseControllerTest;
 
 import java.time.LocalDateTime;
@@ -32,35 +33,58 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class GameControllerTest extends BaseControllerTest {
 
     @Autowired
-    MemberService memberService;
+    AccountService accountService;
 
-    private String getBaererToken(String username) throws Exception {
-        return "Bearer " + getAccescToken(username);
-    }
-    private String getAccescToken(String username) throws Exception {
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        String password = "1234";
+    @Test
+    @Order(1)
+    public void generateUser(){
         LocalDateTime joninDate = LocalDateTime.now();
-        String name = "이름";
-        MemberRequestDto testUser = MemberRequestDto.builder()
-                .username(username)
-                .password(password)
-                .name(name)
+        AccountRequestDto testUser = AccountRequestDto.builder()
+                .username("user")
+                .password("pass")
+                .name("이름")
                 .birth("6001011")
                 .gender(Gender.MALE)
                 .joinDate(joninDate)
-                .roles(Set.of(MemberRole.USER))
+                .roles(Set.of(AccountRole.USER))
                 .build();
-        this.memberService.createMember(MemberMapper.Instance.toEntity(testUser));
-        String Token = this.memberService.authorize(testUser, response, request);
-        return Token;
+        AccountRequestDto user = AccountRequestDto.builder()
+                .username("user2")
+                .password("pass")
+                .name("이름")
+                .birth("6001011")
+                .gender(Gender.MALE)
+                .joinDate(joninDate)
+                .roles(Set.of(AccountRole.USER))
+                .build();
+        this.accountService.createAccount(AccountMapper.Instance.toEntity(testUser));
+        this.accountService.createAccount(AccountMapper.Instance.toEntity(user));
+    }
+
+    private String getBaererToken() {
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        AccountRequestDto account = AccountRequestDto.builder().username("user")
+                .password("pass").build();
+        String token =this.accountService.authorize(account, response, request);
+        return "Bearer " + token;
+    }
+
+    private String getBaererToken2() {
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        AccountRequestDto account = AccountRequestDto.builder().username("user2")
+                .password("pass").build();
+        String token =this.accountService.authorize(account, response, request);
+        return "Bearer " + token;
     }
 
 
-    @BeforeEach
+
+    @Test
+    @Order(2)
     @Description("경기 생성")
-    public void createGameBefor() throws Exception {
+    public void createGameBefore() throws Exception {
 
         String[] names = {"aaa"};
         GameRequestDto game = GameRequestDto.builder()
@@ -68,7 +92,7 @@ class GameControllerTest extends BaseControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/game")
-                        .header(HttpHeaders.AUTHORIZATION, getBaererToken("temp_user"))
+                        .header(HttpHeaders.AUTHORIZATION, getBaererToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(game)));
     }
@@ -92,7 +116,7 @@ class GameControllerTest extends BaseControllerTest {
 
         mockMvc.perform(get("/api/game/1")
                     .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isNoContent());
+                    .andExpect(status().isOk());
     }
 
     @Test
@@ -105,7 +129,7 @@ class GameControllerTest extends BaseControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/game")
-                        .header(HttpHeaders.AUTHORIZATION, getBaererToken("temp_user"))
+                        .header(HttpHeaders.AUTHORIZATION, getBaererToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(game)))
                 .andExpect(status().isOk())
@@ -114,11 +138,11 @@ class GameControllerTest extends BaseControllerTest {
                     String contentAsString = result.getResponse().getContentAsString();
                     GameResponseDto gameResponseDto = objectMapper.readValue(contentAsString, GameResponseDto.class);
 
-                    List<MemberResponseDto> players = gameResponseDto.getPlayers();
+                    List<AccountResponseDto> players = gameResponseDto.getPlayers();
 
                     // 플레이어 목록을 순회하면서 username이 "9301234569"인 플레이어가 있는지 확인.
                     boolean userExists = players.stream()
-                            .anyMatch(playerDto -> "9301234569".equals(playerDto.getUsername()));
+                            .anyMatch(playerDto -> "user".equals(playerDto.getUsername()));
                     players.stream().forEach(e-> System.out.println(e.getName()));
                     assertTrue(userExists, "User with username '9301234569' does not exist in the game");
                 });
@@ -127,9 +151,9 @@ class GameControllerTest extends BaseControllerTest {
 
     @Test
     @Description("경기참가")
-    public void enrollMember() throws Exception {
+    public void enrollAccount() throws Exception {
         mockMvc.perform(put("/api/game/enroll/{id}",1)
-                        .header(HttpHeaders.AUTHORIZATION, getBaererToken("temp2"))
+                        .header(HttpHeaders.AUTHORIZATION, getBaererToken2())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.players", hasSize(3)));
