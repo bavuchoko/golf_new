@@ -42,11 +42,25 @@ public class AccountServiceImpl implements AccountService {
     private final TokenManager tokenManager;
 
     @Override
-    public Account createAccount(Account account) {
-        accountJpaRepository.findByUsername(account.getUsername()).ifPresent( e->{
+    public Account createAccount(AccountRequestDto accountRequestDto) {
+        accountJpaRepository.findByUsername(accountRequestDto.getUsername()).ifPresent( e->{
                 throw new AlreadyExistSuchDataCustomException("이미 존재하는 아이디 입니다.");});
+
+        accountRequestDto.setRoles(Set.of(AccountRole.USER));
+        accountRequestDto.setJoinDate(LocalDateTime.now());
+        getGender(accountRequestDto);
+        Account account = AccountMapper.Instance.toEntity(accountRequestDto);
         account.overwritePassword(passwordEncoder.encode(account.getPassword()));
         return this.accountJpaRepository.save(account);
+    }
+
+    private void getGender(AccountRequestDto accountRequestDto) {
+        Character lastBirth = accountRequestDto.getBirth().charAt( accountRequestDto.getBirth().length() - 1);
+        if('1'== lastBirth){
+            accountRequestDto.setGender(Gender.MALE);
+        }else if('2'== lastBirth){
+            accountRequestDto.setGender(Gender.FEMALE);
+        }
     }
 
     @Override

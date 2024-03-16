@@ -2,19 +2,17 @@ package pjs.golf.app.fields;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import pjs.golf.app.fields.dto.FieldsRequestDto;
 import pjs.golf.app.account.dto.AccountRequestDto;
-import pjs.golf.app.account.entity.Gender;
 import pjs.golf.app.account.entity.AccountRole;
-import pjs.golf.app.account.mapper.AccountMapper;
+import pjs.golf.app.account.entity.Gender;
 import pjs.golf.app.account.service.AccountService;
+import pjs.golf.app.fields.dto.FieldsRequestDto;
 import pjs.golf.common.BaseControllerTest;
 
 import java.time.LocalDateTime;
@@ -46,7 +44,7 @@ class FieldsControllerTest extends BaseControllerTest {
                 .joinDate(joninDate)
                 .roles(Set.of(AccountRole.USER))
                 .build();
-        this.accountService.createAccount(AccountMapper.Instance.toEntity(testUser));
+        this.accountService.createAccount(testUser);
     }
 
     private String getBaererToken() {

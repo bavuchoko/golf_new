@@ -31,9 +31,7 @@ public class AccountController {
     public ResponseEntity create(
             @Valid @RequestBody AccountRequestDto accountRequestDto
     ) {
-        accountRequestDto.setRoles(Set.of(AccountRole.USER));
-        Account userAccount = AccountMapper.Instance.toEntity(accountRequestDto);
-        accountService.createAccount(userAccount);
+        accountService.createAccount(accountRequestDto);
         return ResponseEntity.ok().build();
     }
 

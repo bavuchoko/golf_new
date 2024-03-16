@@ -57,8 +57,8 @@ class GameControllerTest extends BaseControllerTest {
                 .joinDate(joninDate)
                 .roles(Set.of(AccountRole.USER))
                 .build();
-        this.accountService.createAccount(AccountMapper.Instance.toEntity(testUser));
-        this.accountService.createAccount(AccountMapper.Instance.toEntity(user));
+        this.accountService.createAccount(testUser);
+        this.accountService.createAccount(user);
     }
 
     private String getBaererToken() {
