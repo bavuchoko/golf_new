@@ -3,6 +3,13 @@ package pjs.golf.app.account.service.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -22,6 +29,10 @@ import pjs.golf.app.account.mapper.AccountMapper;
 import pjs.golf.app.account.repository.AccountJpaRepository;
 import pjs.golf.app.account.repository.querydsl.AccountQuerydslSupport;
 import pjs.golf.app.account.service.AccountService;
+import pjs.golf.app.game.GameController;
+import pjs.golf.app.game.dto.GameResponseDto;
+import pjs.golf.app.game.entity.Game;
+import pjs.golf.app.game.mapper.GameMapper;
 import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
 import pjs.golf.config.token.TokenManager;
 import pjs.golf.config.token.TokenType;
@@ -30,6 +41,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Service
 @RequiredArgsConstructor
@@ -88,6 +101,22 @@ public class AccountServiceImpl implements AccountService {
             return tokenManager.createToken(authentication, TokenType.ACCESS_TOKEN);
         }return null;
     }
+
+    @Override
+    public void deleteAccount(Account account) {
+        accountJpaRepository.delete(account);
+    }
+
+    @Override
+    public List getUserList() {
+        return accountJpaRepository.findAll();
+    }
+
+    @Override
+    public Page<Account> getUserListPage(Pageable pageable) {
+        return accountJpaRepository.findAll(pageable);
+    }
+
 
     @Override
     public void logout(HttpServletRequest req, HttpServletResponse res) {

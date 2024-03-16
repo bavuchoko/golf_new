@@ -14,6 +14,7 @@ import pjs.golf.app.account.entity.Gender;
 import pjs.golf.app.account.service.AccountService;
 import pjs.golf.app.fields.dto.FieldsRequestDto;
 import pjs.golf.common.BaseControllerTest;
+import pjs.golf.common.TestHelper;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -30,27 +31,17 @@ class FieldsControllerTest extends BaseControllerTest {
 
     @Autowired
     AccountService accountService;
-
     @Test
     @Order(1)
-    public void generateUser(){
-        LocalDateTime joninDate = LocalDateTime.now();
-        AccountRequestDto testUser = AccountRequestDto.builder()
-                .username("user")
-                .password("pass")
-                .name("이름")
-                .birth("6001011")
-                .gender(Gender.MALE)
-                .joinDate(joninDate)
-                .roles(Set.of(AccountRole.USER))
-                .build();
-        this.accountService.createAccount(testUser);
+    public void setupUser() {
+        TestHelper.setupUserData(accountService);
     }
+
 
     private String getBaererToken() {
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        AccountRequestDto account = AccountRequestDto.builder().username("user")
+        AccountRequestDto account = AccountRequestDto.builder().username("test_user1")
                 .password("pass").build();
         String token =this.accountService.authorize(account, response, request);
         return "Bearer " + token;

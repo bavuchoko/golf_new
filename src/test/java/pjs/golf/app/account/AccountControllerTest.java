@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import pjs.golf.app.account.dto.AccountRequestDto;
 import pjs.golf.app.account.service.AccountService;
 import pjs.golf.common.BaseControllerTest;
+import pjs.golf.common.TestHelper;
 import pjs.golf.config.AppProperties;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -30,6 +31,7 @@ class AccountControllerTest extends BaseControllerTest {
         AccountRequestDto account = AccountRequestDto.builder()
                 .username(appProperties.getUserUsername())
                 .password(appProperties.getUserPassword())
+                .birth(appProperties.getUserBirth())
                 .name(appProperties.getUserName())
                 .build();
 

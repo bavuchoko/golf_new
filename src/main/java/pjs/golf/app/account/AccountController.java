@@ -4,20 +4,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import pjs.golf.app.account.dto.AccountRequestDto;
-import pjs.golf.app.account.dto.AccountRequestDto;
-import pjs.golf.app.account.entity.AccountRole;
-import pjs.golf.app.account.mapper.AccountMapper;
-import pjs.golf.app.account.service.AccountService;
 import pjs.golf.app.account.entity.Account;
+import pjs.golf.app.account.service.AccountService;
 import pjs.golf.config.filter.TokenFilter;
-
-import java.util.Set;
 
 
 @RestController
@@ -26,6 +23,14 @@ import java.util.Set;
 public class AccountController {
 
     private final AccountService accountService;
+
+    @GetMapping
+    public ResponseEntity getUsers(
+            Pageable pageable
+    ) {
+        Page<Account> resources =  accountService.getUserListPage(pageable);
+        return new ResponseEntity(resources, HttpStatus.OK);
+    }
 
     @PostMapping("/join")
     public ResponseEntity create(
@@ -69,4 +74,7 @@ public class AccountController {
     public void logout(HttpServletRequest req, HttpServletResponse res){
         accountService.logout(req, res);
     }
+
+
+
 }

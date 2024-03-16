@@ -2,6 +2,7 @@ package pjs.golf.app.game;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import pjs.golf.app.account.entity.AccountRole;
 import pjs.golf.app.account.mapper.AccountMapper;
 import pjs.golf.app.account.service.AccountService;
 import pjs.golf.common.BaseControllerTest;
+import pjs.golf.common.TestHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,36 +37,11 @@ class GameControllerTest extends BaseControllerTest {
     @Autowired
     AccountService accountService;
 
-    @Test
-    @Order(1)
-    public void generateUser(){
-        LocalDateTime joninDate = LocalDateTime.now();
-        AccountRequestDto testUser = AccountRequestDto.builder()
-                .username("user")
-                .password("pass")
-                .name("이름")
-                .birth("6001011")
-                .gender(Gender.MALE)
-                .joinDate(joninDate)
-                .roles(Set.of(AccountRole.USER))
-                .build();
-        AccountRequestDto user = AccountRequestDto.builder()
-                .username("user2")
-                .password("pass")
-                .name("이름")
-                .birth("6001011")
-                .gender(Gender.MALE)
-                .joinDate(joninDate)
-                .roles(Set.of(AccountRole.USER))
-                .build();
-        this.accountService.createAccount(testUser);
-        this.accountService.createAccount(user);
-    }
 
     private String getBaererToken() {
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        AccountRequestDto account = AccountRequestDto.builder().username("user")
+        AccountRequestDto account = AccountRequestDto.builder().username("test_user1")
                 .password("pass").build();
         String token =this.accountService.authorize(account, response, request);
         return "Bearer " + token;
@@ -73,18 +50,25 @@ class GameControllerTest extends BaseControllerTest {
     private String getBaererToken2() {
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        AccountRequestDto account = AccountRequestDto.builder().username("user2")
+        AccountRequestDto account = AccountRequestDto.builder().username("test_user2")
                 .password("pass").build();
         String token =this.accountService.authorize(account, response, request);
         return "Bearer " + token;
     }
 
 
+    @Test
+    @Order(1)
+    public void setupUser() {
+        TestHelper.setupUserData(accountService);
+    }
+
 
     @Test
     @Order(2)
     @Description("경기 생성")
     public void createGameBefore() throws Exception {
+
 
         String[] names = {"aaa"};
         GameRequestDto game = GameRequestDto.builder()
@@ -140,11 +124,10 @@ class GameControllerTest extends BaseControllerTest {
 
                     List<AccountResponseDto> players = gameResponseDto.getPlayers();
 
-                    // 플레이어 목록을 순회하면서 username이 "9301234569"인 플레이어가 있는지 확인.
                     boolean userExists = players.stream()
-                            .anyMatch(playerDto -> "user".equals(playerDto.getUsername()));
+                            .anyMatch(playerDto -> "test_user1".equals(playerDto.getUsername()));
                     players.stream().forEach(e-> System.out.println(e.getName()));
-                    assertTrue(userExists, "User with username '9301234569' does not exist in the game");
+                    assertTrue(userExists, "User with username 'test_user1' does not exist in the game");
                 });
     }
 

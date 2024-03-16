@@ -3,6 +3,7 @@ package pjs.golf.app.account.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ public class Account{
 
     @Column(unique = true)
     private String username;
+
+    @NotNull
     private String birth;
     @JsonIgnore
     private String password;

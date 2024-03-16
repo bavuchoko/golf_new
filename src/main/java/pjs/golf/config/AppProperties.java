@@ -21,11 +21,15 @@ public class AppProperties {
     @NotEmpty
     private String adminName;
     @NotEmpty
+    private String adminBirth;
+    @NotEmpty
     private String userUsername;
+    @NotEmpty
+    private String userName;
     @NotEmpty
     private String userPassword;
     @NotEmpty
-    private String userName;
+    private String userBirth;
     @NotEmpty
     private String clientId;
     @NotEmpty
