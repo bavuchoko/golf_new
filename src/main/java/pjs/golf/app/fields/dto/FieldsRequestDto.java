@@ -16,6 +16,7 @@ public class FieldsRequestDto {
     private String name;
     private String address;
     private String addressDetail;
+    private int courses;
     private Account register;
     private LocalDateTime createDate;
     private boolean isRemoved;

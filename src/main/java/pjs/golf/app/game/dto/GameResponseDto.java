@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GameResponseDto {
     private Long id;
+    private int round;
     private AccountResponseDto host;
     private LocalDateTime playDate;
     private FieldsResponseDto field;

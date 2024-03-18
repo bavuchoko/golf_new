@@ -88,7 +88,7 @@ public class TestHelper extends BaseControllerTest{
 
     public static void setupFieldData(FieldsJpaRepository fieldsJpaRepository) {
         Account account = Account.builder().id(1l).build();
-        Fields fields = Fields.builder().address("주소").addressDetail("디테일").name("경기장").register(account).build();
+        Fields fields = Fields.builder().address("주소").addressDetail("디테일").name("경기장").courses(4).register(account).build();
         fieldsJpaRepository.save(fields);
     }
 

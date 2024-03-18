@@ -15,6 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 public class GameRequestDto {
     private Long id;
+    private int round;
+
     private Account host;
     private LocalDateTime playDate;
     private Fields field;

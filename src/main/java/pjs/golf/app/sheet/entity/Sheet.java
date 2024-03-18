@@ -24,10 +24,10 @@ public class Sheet {
     @JoinColumn(name = "player")
     private Account player;
     private int round;
-    private int score;
+    private int hit;
 
 
-    public void updateScore(int score) {
-        this.score =score;
+    public void updateHit(int hit) {
+        this.hit =hit;
     }
 }

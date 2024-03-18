@@ -14,5 +14,5 @@ public class SheetRequestDto {
     private Game game;
     private Account player;
     private int round;
-    private int score;
+    private int hit;
 }

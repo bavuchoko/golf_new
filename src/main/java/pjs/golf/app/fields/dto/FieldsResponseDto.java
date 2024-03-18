@@ -16,6 +16,7 @@ public class FieldsResponseDto {
     private String name;
     private String address;
     private String addressDetail;
+    private int courses;
     private AccountResponseDto register;
     private LocalDateTime createDate;
     private boolean isRemoved;

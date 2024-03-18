@@ -1,5 +1,6 @@
 package pjs.golf.app.game;
 
+import org.aspectj.weaver.ast.Or;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import pjs.golf.app.account.dto.AccountResponseDto;
 import pjs.golf.app.account.service.AccountService;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.dto.GameResponseDto;
+import pjs.golf.app.game.dto.GameStatus;
 import pjs.golf.common.BaseControllerTest;
 import pjs.golf.common.TestHelper;
 
@@ -107,6 +109,7 @@ class GameControllerTest extends BaseControllerTest {
 
 
     @Test
+    @Order(3)
     @Description("경기참가")
     public void enrollGame() throws Exception {
 
@@ -117,6 +120,22 @@ class GameControllerTest extends BaseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.players", hasSize(3)));
+    }
+
+
+
+    @Test
+    @Order(4)
+    @Description("경기시작")
+    public void startGame() throws Exception {
+        String token =TestHelper.getBaererToken(accountService, "test_user1");
+        mockMvc.perform(put("/api/game/play/{id}",1)
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(GameStatus.PLAYING.toString()))
+                .andExpect(jsonPath("$.round").value(1))
+        ;
+
     }
 
 }

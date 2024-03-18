@@ -27,9 +27,9 @@ public class SheetServiceImpl implements SheetService {
     public List updateScore(SheetRequestDto sheetRequestDto, Game game, Account account) {
 
         if(account.equals(game.getHost())) {
-            Sheet sheet = sheetJpaRepository.findByGameAndPlayerAndRound(game, sheetRequestDto.getPlayer(), sheetRequestDto.getRound())
+            Sheet sheet = sheetJpaRepository.findById(sheetRequestDto.getId())
                             .orElseThrow(()-> new NoSuchDataException(""));
-            sheet.updateScore(sheetRequestDto.getScore());
+            sheet.updateHit(sheetRequestDto.getHit());
             sheetJpaRepository.save(sheet);
         }
         return sheetJpaRepository.findAllByGame(game);
@@ -44,7 +44,7 @@ public class SheetServiceImpl implements SheetService {
                         .game(game)
                         .round(round)
                         .player(e)
-                        .score(0).build();
+                        .hit(0).build();
                 sheetJpaRepository.save(sheet);
             });
         }

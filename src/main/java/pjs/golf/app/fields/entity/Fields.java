@@ -3,6 +3,7 @@ package pjs.golf.app.fields.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import pjs.golf.app.fields.dto.FieldsRequestDto;
 import pjs.golf.app.account.entity.Account;
@@ -24,8 +25,10 @@ public class Fields {
     private String name;
     private String address;
     private String addressDetail;
-    @ManyToOne
 
+    private int courses;    //각 코스는 9홀이 기본값. 코스명은 실제 점수 입력시 A부터 대문자로 부여됨. 코스가 몇개인지 정보만 가지고 있으면 된다.
+
+    @ManyToOne
     @JoinColumn(name = "register")
     private Account register;
 

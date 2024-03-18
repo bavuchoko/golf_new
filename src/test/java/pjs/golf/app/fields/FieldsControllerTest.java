@@ -40,6 +40,7 @@ class FieldsControllerTest extends BaseControllerTest {
         FieldsRequestDto fieldsRequestDto = FieldsRequestDto.builder()
                 .address("주소")
                 .name("경기장명")
+                .courses(4)
                 .build();
 
         String token =TestHelper.getBaererToken(accountService, "test_user1");

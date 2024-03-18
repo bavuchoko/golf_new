@@ -141,6 +141,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional
     public void startGame(Long id, Account account, int round) throws Exception {
         Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
                 new NoSuchDataException("없는 데이터")
@@ -148,6 +149,7 @@ public class GameServiceImpl implements GameService {
         try {
             if(gameEntity.getPlayers().size()>1){
                 if (gameEntity.getHost().equals(account)) {
+                    gameEntity.initRound(round);
                     gameEntity.changeStatus(GameStatus.PLAYING);
                     sheetService.nextRound(account, gameEntity, round);
                 } else {

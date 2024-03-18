@@ -22,6 +22,7 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private int round;
 
     @ManyToOne
     @JoinColumn(name = "host")
@@ -57,5 +58,8 @@ public class Game {
 
     public void removeGame() {
         this.isRemoved =true;
+    }
+    public void initRound(int  round) {
+        this.round =round;
     }
 }
