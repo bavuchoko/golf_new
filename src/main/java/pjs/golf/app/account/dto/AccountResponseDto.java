@@ -1,9 +1,7 @@
 package pjs.golf.app.account.dto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import pjs.golf.app.account.entity.Gender;
 import pjs.golf.app.account.entity.AccountRole;
 
@@ -11,8 +9,10 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class AccountResponseDto {
 
     private Integer id;

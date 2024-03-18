@@ -1,6 +1,7 @@
 package pjs.golf.app.memo;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +23,7 @@ public class MemoController {
     /**
      * 메모 목록조회
      * */
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity getFieldList(
             @PathVariable Long id,

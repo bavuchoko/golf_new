@@ -24,16 +24,14 @@ public class Fields {
     private String name;
     private String address;
     private String addressDetail;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createDate;
-
     @ManyToOne
+
     @JoinColumn(name = "register")
     private Account register;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime playDate;
+    private LocalDateTime createDate;
+
 
     private boolean isRemoved;
 
@@ -41,7 +39,4 @@ public class Fields {
         this.isRemoved = true;
     }
 
-    public void updateField(FieldsRequestDto fieldsRequestDto) {
-
-    }
 }

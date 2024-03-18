@@ -9,8 +9,11 @@ import pjs.golf.app.fields.entity.Fields;
 import pjs.golf.app.account.entity.Account;
 import pjs.golf.common.SearchDto;
 
+import java.util.List;
+
 public interface FieldsService {
-    CollectionModel getFieldList(SearchDto search, Pageable pageable, PagedResourcesAssembler<Fields> assembler);
+    CollectionModel getFieldListResources(SearchDto search, Pageable pageable, PagedResourcesAssembler<Fields> assembler);
+    List getFieldList();
 
     EntityModel createField(FieldsRequestDto fields, Account account);
 

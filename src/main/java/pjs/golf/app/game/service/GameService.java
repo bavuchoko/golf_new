@@ -9,10 +9,12 @@ import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.account.entity.Account;
 import pjs.golf.common.SearchDto;
 
+import java.util.List;
+
 public interface GameService {
-    CollectionModel getGameList(SearchDto search, Pageable pageable, PagedResourcesAssembler<Game> assembler, Account account);
+    CollectionModel getGameListResources(SearchDto search, Pageable pageable, PagedResourcesAssembler<Game> assembler, Account account);
 
-
+    List getGameList();
     EntityModel getGameResource(Long id, Account account);
 
     EntityModel createGame(GameRequestDto gameRequestDto, Account account);

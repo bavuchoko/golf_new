@@ -39,7 +39,7 @@ public class FieldsController {
             PagedResourcesAssembler<Fields> assembler
     ){
         SearchDto search = SearchDto.builder().SearchTxt(searchTxt).build();
-        CollectionModel resources = fieldService.getFieldList(search,pageable, assembler);
+        CollectionModel resources = fieldService.getFieldListResources(search,pageable, assembler);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
 
@@ -48,7 +48,7 @@ public class FieldsController {
      * */
     @GetMapping("/{id}")
     public ResponseEntity viewField(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @CurrentUser Account account){
 
         try {
@@ -115,7 +115,7 @@ public class FieldsController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity deleteField(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @CurrentUser Account account){
 
         try {

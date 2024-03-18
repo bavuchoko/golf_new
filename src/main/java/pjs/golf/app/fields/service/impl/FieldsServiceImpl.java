@@ -23,6 +23,7 @@ import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.common.exception.PermissionLimitedCustomException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -34,9 +35,14 @@ public class FieldsServiceImpl implements FieldsService {
     private final FieldsJpaRepository fieldsJpaRepository;
     private final FieldsJpaQuerydslSupport fieldsJpaQuerydslSupport;
     @Override
-    public CollectionModel getFieldList(SearchDto city, Pageable pageable, PagedResourcesAssembler<Fields> assembler) {
+    public CollectionModel getFieldListResources(SearchDto city, Pageable pageable, PagedResourcesAssembler<Fields> assembler) {
         Page<Fields> fields = fieldsJpaQuerydslSupport.getFieldsListBySearCh(city,pageable);
         return this.getResources(fields, assembler);
+    }
+
+    @Override
+    public List getFieldList() {
+        return fieldsJpaRepository.findAll();
     }
 
     @Override
@@ -72,8 +78,6 @@ public class FieldsServiceImpl implements FieldsService {
     public EntityModel createField(FieldsRequestDto fieldsDto, Account account) {
         fieldsDto.setRegister(account);
         fieldsDto.setCreateDate(LocalDateTime.now());
-
-
         Fields fields = fieldsJpaRepository.save(FieldsMapper.Instance.toEntity(fieldsDto));
 
         return this.getResource(fields, account);

@@ -18,6 +18,7 @@ import pjs.golf.app.account.entity.Account;
 import pjs.golf.common.CurrentUser;
 import pjs.golf.common.SearchDto;
 import pjs.golf.common.WebCommon;
+import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
 import pjs.golf.common.exception.InCorrectStatusCustomException;
 import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.common.exception.PermissionLimitedCustomException;
@@ -45,7 +46,7 @@ public class GameController {
                 .startDate((WebCommon.localDateToLocalDateTime(startDate,"startDate")))
                 .endDate((WebCommon.localDateToLocalDateTime(endDate,"endDate")))
                 .build();
-        CollectionModel resources =  gameService.getGameList(search, pageable, assembler, account);
+        CollectionModel resources =  gameService.getGameListResources(search, pageable, assembler, account);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
 
@@ -53,7 +54,7 @@ public class GameController {
      * 단일조회
      * */
     @GetMapping("{id}")
-    public ResponseEntity getGame(@PathVariable Long id, @CurrentUser Account account) {
+    public ResponseEntity getGame(@PathVariable("id") Long id, @CurrentUser Account account) {
         try {
             EntityModel game = gameService.getGameResource(id, account);
             return new ResponseEntity(game, HttpStatus.OK);
@@ -93,7 +94,7 @@ public class GameController {
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity deleteGame(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @CurrentUser Account account
     ) {
         gameService.removeGame(id, account);
@@ -106,14 +107,15 @@ public class GameController {
     @PutMapping("/enroll/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity joinGame(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @CurrentUser Account account) {
         try {
             EntityModel resource = gameService.enrollGame(id, account);
-
             return ResponseEntity.ok().body(resource);
-        } catch (Exception e) {
+        } catch (AlreadyExistSuchDataCustomException | InCorrectStatusCustomException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -123,7 +125,7 @@ public class GameController {
     @PutMapping("/expel/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity expelPlayer(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @CurrentUser Account account,
             @RequestBody Account target) {
         if (account == null) {
@@ -145,7 +147,7 @@ public class GameController {
     @PutMapping("/play/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity startGame(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @CurrentUser Account account
     ) {
         try {
@@ -167,7 +169,7 @@ public class GameController {
     @PutMapping("/end/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity ebdGame(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @CurrentUser Account account
     ) {
         try {
