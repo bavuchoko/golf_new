@@ -58,7 +58,6 @@ public class AccountServiceImpl implements AccountService {
     public Account createAccount(AccountRequestDto accountRequestDto) {
         accountJpaRepository.findByUsername(accountRequestDto.getUsername()).ifPresent( e->{
                 throw new AlreadyExistSuchDataCustomException("이미 존재하는 아이디 입니다.");});
-
         accountRequestDto.setRoles(Set.of(AccountRole.USER));
         accountRequestDto.setJoinDate(LocalDateTime.now());
         getGender(accountRequestDto);

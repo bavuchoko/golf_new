@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import pjs.golf.app.account.dto.AccountRequestDto;
 import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.account.service.AccountService;
+import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
 import pjs.golf.config.filter.TokenFilter;
 
 
@@ -34,10 +35,19 @@ public class AccountController {
 
     @PostMapping("/join")
     public ResponseEntity create(
-            @Valid @RequestBody AccountRequestDto accountRequestDto
+            @Valid @RequestBody AccountRequestDto accountRequestDto,
+            HttpServletResponse response,
+            HttpServletRequest request
     ) {
-        accountService.createAccount(accountRequestDto);
-        return ResponseEntity.ok().build();
+        try {
+            accountService.createAccount(accountRequestDto);
+            String accessToken = accountService.authorize(accountRequestDto,response, request);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(TokenFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
+            return new ResponseEntity(accessToken, httpHeaders, HttpStatus.OK);
+        } catch (AlreadyExistSuchDataCustomException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.ACCEPTED);
+        }
     }
 
 

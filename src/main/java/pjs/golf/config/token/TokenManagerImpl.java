@@ -75,6 +75,8 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         Long id = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getId();
         String userName = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getUsername();
         String name = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getName();
+        String birth   = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getBirth();
+        String gender   = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getGender().toString();
 
 
         long remainingMilliseconds = getRemainingMilliseconds();
@@ -85,7 +87,10 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
         Map<String, Object> payloads = new HashMap<>();
         payloads.put("id", id);
+        payloads.put("name", name);
         payloads.put("username", userName);
+        payloads.put("birth", birth);
+        payloads.put("gender", gender);
         payloads.put(AUTHORITIES_KEY, authorities);
 
 
