@@ -16,6 +16,9 @@ public class FieldsResponseDto {
     private String name;
     private String address;
     private String addressDetail;
+    private String city;
+    private String latitude;
+    private String longitude;
     private int courses;
     private AccountResponseDto register;
     private LocalDateTime createDate;

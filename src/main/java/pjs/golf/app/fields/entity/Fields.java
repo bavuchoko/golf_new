@@ -25,6 +25,9 @@ public class Fields {
     private String name;
     private String address;
     private String addressDetail;
+    private String city;
+    private String latitude;
+    private String longitude;
 
     private int courses;    //각 코스는 9홀이 기본값. 코스명은 실제 점수 입력시 A부터 대문자로 부여됨. 코스가 몇개인지 정보만 가지고 있으면 된다.
 
