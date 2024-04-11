@@ -22,7 +22,7 @@ public interface AccountService extends UserDetailsService {
 
     void logout(HttpServletRequest req, HttpServletResponse res);
 
-    String reIssueToken(HttpServletRequest request);
+    String reIssueToken(HttpServletRequest request, HttpServletResponse response);
 
     List<Account> getTempUsersByUserNames(List<String> names);
 

@@ -55,13 +55,12 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
             @Value("${spring.jwt.secret}") String secret,
             @Value("${spring.jwt.token-validity-one-min}") long tokenValidityOneMin) {
         this.secret = secret;
-        // 30분
+        // 15분
         this.accessTokenValidityTime = tokenValidityOneMin * 15 ;
     }
 
     @Override
     public void afterPropertiesSet() {
-        System.out.printf("secret");
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -79,6 +78,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         String gender   = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getGender().toString();
 
 
+        //갱신토큰 1주일
         long remainingMilliseconds = getRemainingMilliseconds();
 
         //액세스토큰 유효기간 15분
@@ -103,13 +103,9 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
                 .compact();
     }
 
-    private static long getRemainingMilliseconds() {
-        // 갱신토큰 유효기간 오늘 자정까지
-        LocalDateTime nowTime = LocalDateTime.now();
-        LocalDateTime midnight = LocalDateTime.of(nowTime.toLocalDate(), LocalTime.MAX);
-        Duration remainingTime = Duration.between(nowTime, midnight);
-        long remainingMilliseconds = remainingTime.toMillis();
-        return remainingMilliseconds;
+    private long getRemainingMilliseconds() {
+        //1주일
+        return this.accessTokenValidityTime * 60 * 24 * 7;
     }
 
     @Override

@@ -67,10 +67,10 @@ public class AccountController {
     }
 
     @GetMapping("/reissue")
-    public ResponseEntity reissue(HttpServletRequest request) {
+    public ResponseEntity reissue(HttpServletRequest request, HttpServletResponse response) {
 
         try{
-            String accessToken = accountService.reIssueToken(request);
+            String accessToken = accountService.reIssueToken(request, response);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(TokenFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
 

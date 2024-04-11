@@ -92,11 +92,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String reIssueToken(HttpServletRequest request) {
+    public String reIssueToken(HttpServletRequest request, HttpServletResponse response) {
         String storedRefreshToken = tokenManager.getStoredRefreshToken(request);
         if(StringUtils.hasText(storedRefreshToken) && tokenManager.validateToken(storedRefreshToken)) {
             //refresh토큰으로 부터 인증객체 생성
             Authentication authentication = tokenManager.getAuthenticationFromRefreshToken(request);
+
+            //갱신토큰을 갱신함
+            String refreshToken = tokenManager.createToken(authentication, TokenType.REFRESH_TOKEN);
+            tokenManager.addRefreshTokenToResponse(refreshToken, response);
+
             return tokenManager.createToken(authentication, TokenType.ACCESS_TOKEN);
         }return null;
     }
