@@ -86,6 +86,27 @@ public class GameController {
         }
     }
 
+    /**
+     * 빠른 경기생성
+     * */
+    @PostMapping("/quick")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity quickGame(
+            @RequestBody GameRequestDto gameRequestDto,
+            Errors errors,
+            @CurrentUser Account account
+    ) {
+
+        if (errors.hasErrors()) {
+            return WebCommon.badRequest(errors, this.getClass());
+        }
+        try {
+            EntityModel resource = gameService.createGame(gameRequestDto, account);
+            return new ResponseEntity(resource, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
     /**

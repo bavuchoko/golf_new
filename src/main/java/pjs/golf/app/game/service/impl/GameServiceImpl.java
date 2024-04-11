@@ -96,7 +96,8 @@ public class GameServiceImpl implements GameService {
 
         gameRequestDto.setHost(account);
         gameRequestDto.setPlayDate(LocalDateTime.now());
-        gameRequestDto.setStatus(GameStatus.OPEN);
+        if(gameRequestDto.getStatus() == null) gameRequestDto.setStatus(GameStatus.OPEN);
+
         Game game = gameJpaRepository.save(GameMapper.Instance.toEntity(gameRequestDto));
         return getResource(game, account);
     }

@@ -44,5 +44,4 @@ public class Fields {
     public void removeField() {
         this.isRemoved = true;
     }
-
 }
