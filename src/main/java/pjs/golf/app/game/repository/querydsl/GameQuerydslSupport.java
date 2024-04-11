@@ -35,7 +35,7 @@ public class GameQuerydslSupport extends QuerydslRepositorySupport {
 
         JPAQuery<Game> query= queryFactory.selectFrom(game).where(
                         getBySearchOption(search, account, isRemoved)
-                )
+                ).where(game.playDate.between(search.getStartDate(),search.getEndDate()))
                 .orderBy(QuerydslCommonMethod.getOrderList(pageable.getSort(), Game.class).stream().toArray(OrderSpecifier[]::new))
                 .limit(pageable.getPageSize())
                 ;
@@ -46,7 +46,6 @@ public class GameQuerydslSupport extends QuerydslRepositorySupport {
     private BooleanBuilder getBySearchOption(SearchDto searchDto, Account account, Boolean isRemoved) {
         BooleanBuilder builder = new BooleanBuilder();
         return builder
-
                 .and(QuerydslCommonMethod.nullSafeBuilder(() ->{
                     if(isRemoved ==null) return null;
                     return game.isRemoved.eq(isRemoved);
