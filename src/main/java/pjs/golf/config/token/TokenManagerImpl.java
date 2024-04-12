@@ -20,7 +20,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import pjs.golf.app.account.dto.AccountAdapter;
 import pjs.golf.app.account.repository.AccountJpaRepository;
+import pjs.golf.common.WebCommon;
 import pjs.golf.config.utils.CookieUtil;
+import pjs.golf.config.utils.RedisUtil;
 
 import java.security.Key;
 import java.time.Duration;
@@ -41,6 +43,9 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     @Value("${spring.jwt.token-validity-one-min}")
     private long globalTimeOneMin;
+
+    @Autowired
+    RedisUtil redisUtil;
 
     private Key key;
 
@@ -111,8 +116,12 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
     @Override
     public Authentication getAuthenticationFromRefreshToken(HttpServletRequest request) {
         String refreshTokenInCookie = cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue();
+        String clientIP = WebCommon.getClientIp(request);
         if (validateToken(refreshTokenInCookie)) {
+            String storedIP = redisUtil.getData(refreshTokenInCookie);
+            if(clientIP.equals(storedIP)){
             return getAuthentication(refreshTokenInCookie);
+            }
         }
         return null;
     }

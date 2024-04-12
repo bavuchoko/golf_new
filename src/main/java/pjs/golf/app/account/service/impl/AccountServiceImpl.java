@@ -3,6 +3,7 @@ package pjs.golf.app.account.service.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -36,6 +37,8 @@ import pjs.golf.app.game.mapper.GameMapper;
 import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
 import pjs.golf.config.token.TokenManager;
 import pjs.golf.config.token.TokenType;
+import pjs.golf.config.utils.CookieUtil;
+import pjs.golf.config.utils.RedisUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,11 +51,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
+
+
     private final PasswordEncoder passwordEncoder;
     private final AccountJpaRepository accountJpaRepository;
     private final AccountQuerydslSupport accountQuerydslSupport;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenManager tokenManager;
+
+    private final CookieUtil cookieUtil;
+    private final RedisUtil redisUtil;
 
     @Override
     public Account createAccount(AccountRequestDto accountRequestDto) {
@@ -129,6 +137,10 @@ public class AccountServiceImpl implements AccountService {
          * 현재 갱신 토큰만 삭제하고 있고
          * 이미 발급된 엑세스 토큰은 여전히 유효하므로 해당 토큰을 무효화 하기 위해 유효기간 0짜리로 재발급 하는 로직이 필요함.
          */
+        if(null != cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue())){
+            String refreshTokenInCookie = cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue()).getValue();
+            redisUtil.deleteData(refreshTokenInCookie);
+        }
         tokenManager.logout(req, res);
     }
 
