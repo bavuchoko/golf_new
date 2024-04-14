@@ -45,6 +45,7 @@ class GameControllerTest extends BaseControllerTest {
         String[] names = {"aaa"};
         GameRequestDto game = GameRequestDto.builder()
                 .names(names)
+                .status(GameStatus.OPEN)
                 .build();
 
         String token =TestHelper.getBaererToken(accountService, "test_user1");
@@ -130,6 +131,7 @@ class GameControllerTest extends BaseControllerTest {
     public void startGame() throws Exception {
         String token =TestHelper.getBaererToken(accountService, "test_user1");
         mockMvc.perform(put("/api/game/play/{id}",1)
+                         .param("startHole", "1")
                         .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status").value(GameStatus.PLAYING.toString()))

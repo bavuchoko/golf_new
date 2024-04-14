@@ -26,7 +26,7 @@ public class MemoController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity getFieldList(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @CurrentUser Account account
             ) {
         List resources = memoService.getMemosByFieldAndUser(id, account);

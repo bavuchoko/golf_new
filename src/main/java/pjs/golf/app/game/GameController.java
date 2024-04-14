@@ -38,8 +38,8 @@ public class GameController {
     public ResponseEntity getGameList(
             Pageable pageable,
             @CurrentUser Account account,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false, name = "startDate") String startDate,
+            @RequestParam(required = false,  name = "endDate") String endDate,
             PagedResourcesAssembler<Game> assembler
     ) {
         SearchDto search = SearchDto.builder()
@@ -172,14 +172,13 @@ public class GameController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity startGame(
             @PathVariable("id") Long id,
-            @PathVariable("startHole") int startHole,
+            @RequestParam("startHole") int startHole,
             @CurrentUser Account account
     ) {
         try {
             gameService.startGame(id, account, 1, startHole);
 
             EntityModel resource = gameService.getGameResource(id, account);
-
             return new  ResponseEntity(resource, HttpStatus.OK);
         } catch (PermissionLimitedCustomException | InCorrectStatusCustomException | NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);

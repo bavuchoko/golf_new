@@ -35,7 +35,7 @@ public class FieldsController {
     @GetMapping
     public ResponseEntity getFieldList(
             Pageable pageable,
-            @RequestParam(required = false) String searchTxt,
+            @RequestParam(required = false, name="searchTxt") String searchTxt,
             PagedResourcesAssembler<Fields> assembler
     ){
         SearchDto search = SearchDto.builder().SearchTxt(searchTxt).build();
