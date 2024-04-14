@@ -79,7 +79,8 @@ public class GameController {
             return WebCommon.badRequest(errors, this.getClass());
         }
         try {
-            EntityModel resource = gameService.createGame(gameRequestDto, account);
+            Game game = gameService.createGame(gameRequestDto, account);
+            EntityModel resource = gameService.getResource(game);
             return new ResponseEntity(resource, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -101,10 +102,14 @@ public class GameController {
             return WebCommon.badRequest(errors, this.getClass());
         }
         try {
-            EntityModel resource = gameService.createGame(gameRequestDto, account);
+            Game game = gameService.createGame(gameRequestDto, account);
+            gameService.startGame(game.getId(), account, 1, 1);
+            EntityModel resource = gameService.getResource(game);
             return new ResponseEntity(resource, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -153,8 +158,6 @@ public class GameController {
             return ResponseEntity.badRequest().body("로그인이 필요 합니다.");
         }
         try {
-
-            EntityModel resource = gameService.getGameResource(id, account);
             gameService.expelPlayer(id, account, target);
             return new ResponseEntity(HttpStatus.OK);
         }catch (Exception e){

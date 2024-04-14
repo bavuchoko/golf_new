@@ -17,7 +17,7 @@ public interface GameService {
     List getGameList();
     EntityModel getGameResource(Long id, Account account);
 
-    EntityModel createGame(GameRequestDto gameRequestDto, Account account);
+    Game createGame(GameRequestDto gameRequestDto, Account account);
 
     EntityModel enrollGame(Long id, Account account);
 
@@ -30,4 +30,7 @@ public interface GameService {
     EntityModel endGame(Long id, Account account);
 
     void removeGame(Long id, Account account);
+
+    EntityModel getResource(Game game);
+
 }

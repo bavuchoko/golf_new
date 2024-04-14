@@ -90,7 +90,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public EntityModel createGame(GameRequestDto gameRequestDto, Account account) {
+    public Game createGame(GameRequestDto gameRequestDto, Account account) {
         List<Account> players = this.intiPlayer(gameRequestDto, account);
         gameRequestDto.setPlayers(players);
 
@@ -98,7 +98,7 @@ public class GameServiceImpl implements GameService {
         gameRequestDto.setPlayDate(LocalDateTime.now());
 
         Game game = gameJpaRepository.save(GameMapper.Instance.toEntity(gameRequestDto));
-        return getResource(game, account);
+        return game;
     }
 
     @Override
@@ -215,6 +215,7 @@ public class GameServiceImpl implements GameService {
         return resource;
     }
 
+    @Override
     public EntityModel getResource(Game game) {
         GameResponseDto gameResponseDto = GameMapper.Instance.toResponseDto(game);
         WebMvcLinkBuilder selfLink = linkTo(GameController.class).slash(gameResponseDto.getId());
