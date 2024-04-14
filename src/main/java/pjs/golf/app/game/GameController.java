@@ -169,10 +169,11 @@ public class GameController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity startGame(
             @PathVariable("id") Long id,
+            @PathVariable("startHole") int startHole,
             @CurrentUser Account account
     ) {
         try {
-            gameService.startGame(id, account, 1);
+            gameService.startGame(id, account, 1, startHole);
 
             EntityModel resource = gameService.getGameResource(id, account);
 

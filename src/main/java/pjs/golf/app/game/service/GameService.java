@@ -23,7 +23,7 @@ public interface GameService {
 
     void expelPlayer(Long id, Account account, Account target);
 
-    void startGame(Long id, Account account, int round) throws Exception;
+    void startGame(Long id, Account account, int round, int startHole) throws Exception;
 
     Game getGameInfo(Long id);
 

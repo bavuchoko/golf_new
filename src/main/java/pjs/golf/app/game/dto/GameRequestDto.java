@@ -18,6 +18,7 @@ public class GameRequestDto {
     private int round;
 
     private Account host;
+    private int startHole;
     private LocalDateTime playDate;
     private Fields field;
     private List<Account> players;

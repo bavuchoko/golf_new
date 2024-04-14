@@ -96,7 +96,6 @@ public class GameServiceImpl implements GameService {
 
         gameRequestDto.setHost(account);
         gameRequestDto.setPlayDate(LocalDateTime.now());
-        if(gameRequestDto.getStatus() == null) gameRequestDto.setStatus(GameStatus.OPEN);
 
         Game game = gameJpaRepository.save(GameMapper.Instance.toEntity(gameRequestDto));
         return getResource(game, account);
@@ -143,7 +142,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void startGame(Long id, Account account, int round) throws Exception {
+    public void startGame(Long id, Account account, int round, int startHole) throws Exception {
         Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
                 new NoSuchDataException("없는 데이터")
         );
@@ -151,6 +150,7 @@ public class GameServiceImpl implements GameService {
             if(gameEntity.getPlayers().size()>1){
                 if (gameEntity.getHost().equals(account)) {
                     gameEntity.initRound(round);
+                    gameEntity.initStartHole(startHole);
                     gameEntity.changeStatus(GameStatus.PLAYING);
                     sheetService.nextRound(account, gameEntity, round);
                 } else {

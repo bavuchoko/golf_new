@@ -28,6 +28,9 @@ public class Game {
     @JoinColumn(name = "host")
     private Account host;
 
+
+    private int startHole;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime playDate;
 
@@ -58,6 +61,9 @@ public class Game {
 
     public void removeGame() {
         this.isRemoved =true;
+    }
+    public void initStartHole(int startHole) {
+        this.startHole =startHole;
     }
     public void initRound(int  round) {
         this.round =round;
