@@ -1,14 +1,13 @@
 package pjs.golf.app.account.mapper;
 
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 import pjs.golf.app.account.dto.AccountRequestDto;
 import pjs.golf.app.account.dto.AccountResponseDto;
 import pjs.golf.app.account.entity.Account;
+
+import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,uses = {})
 public interface AccountMapper {
@@ -21,4 +20,9 @@ public interface AccountMapper {
     @Mapping(source = "roles", target = "roles", ignore = true)
     @Mapping(source = "password", target = "password", ignore = true)
     AccountResponseDto AccountResponse(Account account);
+
+
+    @Named("accountResponseList")
+    @IterableMapping(qualifiedByName = "accountResponse")
+    List<AccountResponseDto> AccountResponse(List<Account> account);
 }

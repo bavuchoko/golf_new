@@ -47,6 +47,7 @@ public class GameServiceImpl implements GameService {
     private final SheetService sheetService;
 
     @Override
+    @Transactional(readOnly = true)
     public CollectionModel getGameListResources(SearchDto search, Pageable pageable, PagedResourcesAssembler<Game> assembler, Account account) {
         Page<Game> games = gameQuerydslSupport.getGameListBetweenDate(search, pageable, account, false);
     return  this.getPageResources(assembler, games, account);

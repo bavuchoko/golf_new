@@ -7,10 +7,11 @@ import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.dto.GameResponseDto;
 import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.account.mapper.AccountMapper;
+import pjs.golf.app.sheet.mapper.SheetMapper;
 
 import java.util.List;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {AccountMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {AccountMapper.class, SheetMapper.class})
 public interface GameMapper {
 
     GameMapper Instance = Mappers.getMapper(GameMapper.class);
@@ -20,6 +21,8 @@ public interface GameMapper {
 
     @Named("gameResponse")
     @Mapping(source = "host", target = "host", qualifiedByName = "accountResponse")
+    @Mapping(source = "players", target = "players", qualifiedByName = "accountResponseList")
+    @Mapping(source = "sheets", target = "sheets", qualifiedByName = "sheetResponseList")
     GameResponseDto toResponseDto(Game game);
 
 
