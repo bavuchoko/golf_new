@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import pjs.golf.app.fields.entity.Fields;
 import pjs.golf.app.fields.entity.QFields;
@@ -36,6 +37,8 @@ public class FieldsJpaQuerydslSupport extends QuerydslRepositorySupport {
     }
 
     QFields fields = QFields.fields;
+
+    @Transactional(readOnly = true)
     public Page<Fields> getFieldsListBySearCh(SearchDto search, Pageable pageable) {
 
         JPAQuery<Fields> query= queryFactory.selectFrom(fields).where(
