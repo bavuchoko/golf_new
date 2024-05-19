@@ -7,6 +7,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
@@ -53,10 +54,11 @@ public class GameController {
     /**
      * 단일조회
      * */
-    @GetMapping("{id}")
+    @GetMapping( value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity getGame(@PathVariable("id") Long id, @CurrentUser Account account) {
         try {
             EntityModel game = gameService.getGameResource(id, account);
+
             return new ResponseEntity(game, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(e, HttpStatus.NO_CONTENT);

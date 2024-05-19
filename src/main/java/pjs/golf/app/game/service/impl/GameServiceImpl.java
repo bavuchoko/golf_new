@@ -59,11 +59,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EntityModel getGameResource(Long id, Account account) {
         Game game = gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
         return getResource(game, account);
     }
     @Override
+    @Transactional(readOnly = true)
     public Game getGameInfo(Long id) {
         return gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
     }
@@ -122,7 +124,7 @@ public class GameServiceImpl implements GameService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public void expelPlayer(Long id, Account account, Account target) {
         Game entity = gameJpaRepository.findById(id).orElseThrow(
                 ()-> new NoSuchDataException("")
@@ -142,7 +144,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public void startGame(Long id, Account account, int round, int startHole) throws Exception {
         Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
                 new NoSuchDataException("없는 데이터")
