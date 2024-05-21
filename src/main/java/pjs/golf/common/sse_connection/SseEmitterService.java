@@ -1,7 +1,11 @@
 package pjs.golf.common.sse_connection;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -20,7 +24,7 @@ public class SseEmitterService {
     private static final long RECONNECTION_TIMEOUT = 1000L;
     private final Logger log = LoggerFactory.getLogger(SseEmitterService.class);
 
-    public SseEmitter subscribe(Long gameId, Long userId, String message) {
+    public SseEmitter subscribe(Long gameId, Long userId, EntityModel entityModel) {
         SseEmitter emitter = getEmitter(gameId, userId);
         Map<Long, SseEmitter> userMap = new ConcurrentHashMap<>();
         userMap.put(userId, emitter);
@@ -28,6 +32,7 @@ public class SseEmitterService {
 
         //초기 연결시에 응답 데이터를 전송할 수도 있다.
         try {
+            String message = getJsonString(entityModel);
             SseEmitter.SseEventBuilder event = SseEmitter.event()
                     .name("connect")
                     //event id (id: id-1) - 재연결시 클라이언트에서 `Last-Event-ID` 헤더에 마지막 event id 를 설정
@@ -41,10 +46,11 @@ public class SseEmitterService {
         return emitter;
     }
 
-    public void broadcast(Long gameId, String message) {
+    public void broadcast(Long gameId, EntityModel entityModel) {
         Map<Long, SseEmitter> userMap = emitterMap.get(gameId);
         userMap.forEach((id, player) -> {
             try {
+                String message = getJsonString(entityModel);
                 player.send(SseEmitter.event()
                         .name("broadcast")
                         .id( gameId + "_" + System.currentTimeMillis() )
@@ -83,5 +89,12 @@ public class SseEmitterService {
             log.info("disconnected by completed server sent event: id={}", userId);
         });
         return emitter;
+    }
+
+
+    private String getJsonString(EntityModel entityModel) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper.writeValueAsString(entityModel);
     }
 }

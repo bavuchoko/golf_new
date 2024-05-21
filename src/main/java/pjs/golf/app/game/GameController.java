@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.game.service.GameService;
@@ -23,6 +24,7 @@ import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
 import pjs.golf.common.exception.InCorrectStatusCustomException;
 import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.common.exception.PermissionLimitedCustomException;
+import pjs.golf.common.sse_connection.SseEmitterService;
 
 @RestController
 @RequestMapping(value = "/api/game", produces = "application/json;charset=UTF-8")
@@ -30,7 +32,7 @@ import pjs.golf.common.exception.PermissionLimitedCustomException;
 public class GameController {
 
     private final GameService gameService;
-
+    private final SseEmitterService sseEmitterService;
 
     /**
      * 목록조회
@@ -55,13 +57,13 @@ public class GameController {
      * 단일조회
      * */
     @GetMapping( value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity getGame(@PathVariable("id") Long id, @CurrentUser Account account) {
+    public ResponseEntity<SseEmitter> getGame(@PathVariable("id") Long id, @CurrentUser Account account) {
         try {
             EntityModel game = gameService.getGameResource(id, account);
-
-            return new ResponseEntity(game, HttpStatus.OK);
+            SseEmitter subscribe = sseEmitterService.subscribe(id, account.getId(), game);
+            return new ResponseEntity(subscribe, HttpStatus.OK);
         } catch (NoSuchDataException e) {
-            return new ResponseEntity(e, HttpStatus.NO_CONTENT);
+            return new ResponseEntity(null, HttpStatus.NO_CONTENT);
         }
 
     }
