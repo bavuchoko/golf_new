@@ -14,6 +14,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import pjs.golf.app.game.dto.GameRequestDto;
+import pjs.golf.app.game.dto.GameStatus;
 import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.game.service.GameService;
 import pjs.golf.app.account.entity.Account;
@@ -83,6 +84,7 @@ public class GameController {
             return WebCommon.badRequest(errors, this.getClass());
         }
         try {
+            gameRequestDto.setStatus(GameStatus.OPEN);
             Game game = gameService.createGame(gameRequestDto, account);
             EntityModel resource = gameService.getResource(game);
             return new ResponseEntity(resource, HttpStatus.OK);
