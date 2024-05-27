@@ -9,24 +9,31 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.game.dto.GameResponseDto;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.LogManager;
 
 @Service
 public class SseEmitterService {
 
-    private final Map<Long, Map<Long, SseEmitter>> emitterMap = new ConcurrentHashMap<>();
+    private final Map<Long, Map<String, SseEmitter>> emitterMap = new ConcurrentHashMap<>();
     private static final Long TIMEOUT = 120L * 1000 * 60;
     private static final long RECONNECTION_TIMEOUT = 1000L;
     private final Logger log = LoggerFactory.getLogger(SseEmitterService.class);
 
-    public SseEmitter subscribe(Long gameId, Long userId, EntityModel entityModel) {
+    public SseEmitter subscribe(Long gameId, Account account, EntityModel entityModel) {
+        String userId =null;
+        if(account==null)
+            userId = UUID.randomUUID().toString();
+        else
+            userId = account.getId().toString();
         SseEmitter emitter = getEmitter(gameId, userId);
-        Map<Long, SseEmitter> userMap = new ConcurrentHashMap<>();
+        Map<String, SseEmitter> userMap = new ConcurrentHashMap<>();
         userMap.put(userId, emitter);
         emitterMap.put(gameId, userMap);
 
@@ -47,7 +54,7 @@ public class SseEmitterService {
     }
 
     public void broadcast(Long gameId, EntityModel entityModel) {
-        Map<Long, SseEmitter> userMap = emitterMap.get(gameId);
+        Map<String, SseEmitter> userMap = emitterMap.get(gameId);
         userMap.forEach((id, player) -> {
             try {
                 String message = getJsonString(entityModel);
@@ -64,7 +71,7 @@ public class SseEmitterService {
         });
     }
 
-    private SseEmitter getEmitter(Long gameId, Long userId) {
+    private SseEmitter getEmitter(Long gameId, String userId) {
 
         SseEmitter emitter = new SseEmitter(TIMEOUT);
         //연결 세션 timeout 이벤트 핸들러 등록

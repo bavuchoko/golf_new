@@ -105,6 +105,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EntityModel enrollGame(Long id, Account account) {
         Game game= gameJpaRepository.findById(id).orElseThrow(()->new NoSuchDataException("") );
         if(game.getPlayers().size()<4 && game.getStatus().equals(GameStatus.OPEN)) {
@@ -144,7 +145,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void startGame(Long id, Account account, int round, int startHole) throws Exception {
         Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
                 new NoSuchDataException("없는 데이터")

@@ -1,6 +1,9 @@
 package pjs.golf.app.game;
 
 
+import io.netty.util.internal.StringUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -10,9 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import pjs.golf.app.account.service.AccountService;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.dto.GameStatus;
 import pjs.golf.app.game.entity.Game;
@@ -26,6 +31,7 @@ import pjs.golf.common.exception.InCorrectStatusCustomException;
 import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.common.exception.PermissionLimitedCustomException;
 import pjs.golf.common.sse_connection.SseEmitterService;
+import pjs.golf.config.token.TokenManagerImpl;
 
 @RestController
 @RequestMapping(value = "/api/game", produces = "application/json;charset=UTF-8")
@@ -34,7 +40,7 @@ public class GameController {
 
     private final GameService gameService;
     private final SseEmitterService sseEmitterService;
-
+    private final AccountService accountService;
     /**
      * 목록조회
      * */
@@ -58,10 +64,21 @@ public class GameController {
      * 단일조회
      * */
     @GetMapping( value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> getGame(@PathVariable("id") Long id, @CurrentUser Account account) {
+    public ResponseEntity<SseEmitter> getGame(
+            @PathVariable("id") Long id,
+            @CurrentUser Account account,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
         try {
+            String jwt = request.getHeader("Authorization");
+            String accessToken =null;
+            if(account == null && StringUtils.hasText(jwt))
+                accessToken= accountService.reIssueToken(request, response);
+
             EntityModel game = gameService.getGameResource(id, account);
-            SseEmitter subscribe = sseEmitterService.subscribe(id, account.getId(), game);
+
+            SseEmitter subscribe = sseEmitterService.subscribe(id, account, game);
             return new ResponseEntity(subscribe, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(null, HttpStatus.NO_CONTENT);
