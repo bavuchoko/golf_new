@@ -159,7 +159,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setHttpOnly(true);
         long now = (new Date()).getTime();
-        refreshTokenCookie.setMaxAge((int)(now + getRemainingMilliseconds()));
+        refreshTokenCookie.setMaxAge((int)((now + getRemainingMilliseconds()) / 1000) );
         response.addCookie(refreshTokenCookie);
     }
 
