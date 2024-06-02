@@ -95,6 +95,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public String reIssueToken(HttpServletRequest request, HttpServletResponse response) {
         String storedRefreshToken = tokenManager.getStoredRefreshToken(request);
+        log.info("storedRefreshToken ={}", storedRefreshToken);
         if(StringUtils.hasText(storedRefreshToken) && tokenManager.validateToken(storedRefreshToken)) {
             //refresh토큰으로 부터 인증객체 생성
             Authentication authentication = tokenManager.getAuthenticationFromRefreshToken(request);

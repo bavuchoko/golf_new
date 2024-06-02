@@ -2,9 +2,12 @@ package pjs.golf.app.game;
 
 
 import io.netty.util.internal.StringUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
@@ -32,6 +35,8 @@ import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.common.exception.PermissionLimitedCustomException;
 import pjs.golf.common.sse_connection.SseEmitterService;
 import pjs.golf.config.token.TokenManagerImpl;
+import pjs.golf.config.token.TokenType;
+import pjs.golf.config.utils.CookieUtil;
 
 @RestController
 @RequestMapping(value = "/api/game", produces = "application/json;charset=UTF-8")
@@ -41,6 +46,9 @@ public class GameController {
     private final GameService gameService;
     private final SseEmitterService sseEmitterService;
     private final AccountService accountService;
+    private final CookieUtil cookieUtil;
+    private final Logger log = LoggerFactory.getLogger(GameController.class);
+
     /**
      * 목록조회
      * */
@@ -71,6 +79,8 @@ public class GameController {
             HttpServletResponse response
     ) {
         try {
+            Cookie cookie = cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue());
+            log.info(cookie.getName());
             String jwt = request.getHeader("Authorization");
             String accessToken =null;
             if(account == null && StringUtils.hasText(jwt))
@@ -200,7 +210,6 @@ public class GameController {
     ) {
         try {
             gameService.startGame(id, account, 1, startHole);
-
             EntityModel resource = gameService.getGameResource(id, account);
             return new  ResponseEntity(resource, HttpStatus.OK);
         } catch (PermissionLimitedCustomException | InCorrectStatusCustomException | NoSuchDataException e) {
