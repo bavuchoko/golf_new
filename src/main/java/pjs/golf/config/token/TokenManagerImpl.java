@@ -146,7 +146,6 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     @Override
     public String getStoredRefreshToken(HttpServletRequest request) {
-        log.info("refreshToken = {}", cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue());
         return cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue();
     }
 
@@ -163,13 +162,17 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     @Override
     public void logout(HttpServletRequest req, HttpServletResponse res) {
+
         if(cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue()) != null){
+            log.info("logout ={}", getStoredRefreshToken(req));
             redisUtil.deleteData(getStoredRefreshToken(req));
             Cookie cookie = cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue());
             cookie.setMaxAge(0);
             cookie.setSecure(true);
             cookie.setHttpOnly(true);
             res.addCookie(cookie);
+        }else{
+            log.info("logout cookie is null");
         }
     }
 

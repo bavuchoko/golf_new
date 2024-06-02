@@ -20,7 +20,10 @@ public class CookieUtil {
 
     public Cookie getCookie(HttpServletRequest req, String cookieName){
         Cookie[] cookies = req.getCookies();
-        if(cookies==null) return null;
+        if(cookies==null){
+            log.info("cookie is null");
+            return null;
+        }
         for(Cookie cookie : cookies){
             log.info("cookie name= {}, cookie value = {}", cookie.getName(), cookie.getValue());
             if(cookie.getName().equals(cookieName))
