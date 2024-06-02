@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -133,7 +134,16 @@ public class AccountServiceImpl implements AccountService {
          */
         if( cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue()) != null){
             String refreshTokenInCookie = tokenManager.getStoredRefreshToken(req);;
-            log.info("refreshToken = {}", refreshTokenInCookie);
+
+            ResponseCookie cookie = ResponseCookie.from(TokenType.REFRESH_TOKEN.getValue(), refreshTokenInCookie)
+                    .path("/")
+                    .sameSite("None")
+                    .httpOnly(true)
+                    .secure(true)
+                    .maxAge(0)
+                    .build();
+            res.addHeader("Set-Cookie", cookie.toString());
+
             redisUtil.deleteData(refreshTokenInCookie);
         }
         tokenManager.logout(req, res);
