@@ -3,6 +3,8 @@ package pjs.golf.app.account.service.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -40,6 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
+    private final Logger log = LoggerFactory.getLogger(AccountServiceImpl.class);
 
 
     private final PasswordEncoder passwordEncoder;
@@ -126,8 +129,9 @@ public class AccountServiceImpl implements AccountService {
          * 현재 갱신 토큰만 삭제하고 있고
          * 이미 발급된 엑세스 토큰은 여전히 유효하므로 해당 토큰을 무효화 하기 위해 유효기간 0짜리로 재발급 하는 로직이 필요함.
          */
-        if(null != cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue())){
-            String refreshTokenInCookie = cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue()).getValue();
+        if( cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue()) != null){
+            String refreshTokenInCookie = tokenManager.getStoredRefreshToken(req);;
+            log.info("refreshToken = {}", refreshTokenInCookie);
             redisUtil.deleteData(refreshTokenInCookie);
         }
         tokenManager.logout(req, res);
