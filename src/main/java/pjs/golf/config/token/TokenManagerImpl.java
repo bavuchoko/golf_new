@@ -3,7 +3,6 @@ package pjs.golf.config.token;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -32,7 +31,7 @@ import java.util.stream.Collectors;
 @Component
 public class TokenManagerImpl implements TokenManager, InitializingBean {
 
-    private final Logger logger = LoggerFactory.getLogger(TokenManagerImpl.class);
+    private final Logger log = LoggerFactory.getLogger(TokenManagerImpl.class);
 
     private static final String AUTHORITIES_KEY = "auth";
 
@@ -146,6 +145,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     @Override
     public String getStoredRefreshToken(HttpServletRequest request) {
+        log.info("refreshToken = {}", cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue());
         return cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue();
     }
 
@@ -236,16 +236,16 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            logger.info("잘못된 JWT 서명입니다.");
+            log.info("잘못된 JWT 서명입니다.");
             throw e;
         } catch (ExpiredJwtException e) {
-            logger.info("만료된 JWT 토큰입니다.");
+            log.info("만료된 JWT 토큰입니다.");
             throw e;
         } catch (UnsupportedJwtException e) {
-            logger.info("지원되지 않는 JWT 토큰입니다.");
+            log.info("지원되지 않는 JWT 토큰입니다.");
             throw e;
         } catch (IllegalArgumentException e) {
-            logger.info("JWT 토큰이 잘못되었습니다.");
+            log.info("JWT 토큰이 잘못되었습니다.");
             throw e;
         }
 

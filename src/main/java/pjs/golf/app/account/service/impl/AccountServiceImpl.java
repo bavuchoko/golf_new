@@ -86,8 +86,9 @@ public class AccountServiceImpl implements AccountService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String accessToken = tokenManager.createToken(authentication, TokenType.ACCESS_TOKEN);
         String refreshToken = tokenManager.createToken(authentication, TokenType.REFRESH_TOKEN);
+
+        log.info("refreshToken = {}", refreshToken);
         tokenManager.addRefreshTokenToResponse(refreshToken, response);
-        log.info("authorize call");
         redisUtil.setData(refreshToken, WebCommon.getClientIp(request));
         return accessToken;
     }
