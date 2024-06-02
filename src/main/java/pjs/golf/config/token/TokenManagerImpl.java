@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -150,12 +151,16 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     @Override
     public void addRefreshTokenToResponse(String refreshToken, HttpServletResponse response) {
-        Cookie refreshTokenCookie = cookieUtil.createCookie(TokenType.REFRESH_TOKEN.getValue(), refreshToken);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setHttpOnly(true);
         long now = (new Date()).getTime();
-        refreshTokenCookie.setMaxAge((int)((now + getRemainingMilliseconds()) / 1000) );
-        response.addCookie(refreshTokenCookie);
+        int maxAge = (int)((now + getRemainingMilliseconds()) / 1000);
+        ResponseCookie cookie = ResponseCookie.from(TokenType.REFRESH_TOKEN.getValue(), refreshToken)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(false)
+                .secure(true)
+                .maxAge(maxAge)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     @Override
