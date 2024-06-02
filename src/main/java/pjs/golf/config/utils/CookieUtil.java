@@ -2,10 +2,16 @@ package pjs.golf.config.utils;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class CookieUtil {
+
+    private final Logger log = LoggerFactory.getLogger(CookieUtil.class);
 
     public Cookie createCookie(String cookieName, String value){
         Cookie cookie = new Cookie(cookieName,value);
@@ -15,9 +21,10 @@ public class CookieUtil {
 
     public Cookie getCookie(HttpServletRequest req, String cookieName){
         final Cookie[] cookies = req.getCookies();
-        if(cookies==null) return null;
-        for(Cookie cookie : cookies){
-            if(cookie.getName().equals(cookieName))
+        if (cookies == null) return null;
+        for (Cookie cookie : cookies) {
+            log.info("Checking cookie: name = {}, value = {}", cookie.getName(), cookie.getValue()); // 추가된 로그
+            if (cookie.getName().equals(cookieName))
                 return cookie;
         }
         return null;
