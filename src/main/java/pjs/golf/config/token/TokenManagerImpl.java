@@ -146,16 +146,14 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     @Override
     public String getStoredRefreshToken(HttpServletRequest request) {
-        log.info("refreshToken = {}", cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue());
         return cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue();
     }
 
     @Override
     public void addRefreshTokenToResponse(String refreshToken, HttpServletResponse response) {
         Cookie refreshTokenCookie = cookieUtil.createCookie(TokenType.REFRESH_TOKEN.getValue(), refreshToken);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setHttpOnly(true);
         long now = (new Date()).getTime();
+        log.info("time ={}",(int)((now + getRemainingMilliseconds()) / 1000));
         refreshTokenCookie.setMaxAge((int)((now + getRemainingMilliseconds()) / 1000) );
         response.addCookie(refreshTokenCookie);
     }

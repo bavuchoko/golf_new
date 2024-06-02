@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import pjs.golf.config.token.TokenType;
 
 @Component
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class CookieUtil {
     public Cookie createCookie(String cookieName, String value){
         Cookie cookie = new Cookie(cookieName,value);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         return cookie;
     }
 
@@ -31,8 +33,10 @@ public class CookieUtil {
 
 
     public Cookie deleteCookie(HttpServletRequest req ,String cookieName) {
-        Cookie cookie = getCookie(req,"refreshToken");
+        Cookie cookie = getCookie(req, TokenType.REFRESH_TOKEN.getValue());
         cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         return cookie;
     }
 
