@@ -3,6 +3,7 @@ package pjs.golf.config.token;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -151,17 +152,12 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     @Override
     public void addRefreshTokenToResponse(String refreshToken, HttpServletResponse response) {
+        Cookie refreshTokenCookie = cookieUtil.createCookie(TokenType.REFRESH_TOKEN.getValue(), refreshToken);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setHttpOnly(true);
         long now = (new Date()).getTime();
-        log.info("addRefreshTokenToResponse = {}", refreshToken);
-        int maxAge = (int)((now + getRemainingMilliseconds()) / 1000);
-        ResponseCookie cookie = ResponseCookie.from(TokenType.REFRESH_TOKEN.getValue(), refreshToken)
-                .path("/")
-                .sameSite("None")
-                .httpOnly(true)
-                .secure(true)
-                .maxAge(maxAge)
-                .build();
-        response.addHeader("Set-Cookie", cookie.toString());
+        refreshTokenCookie.setMaxAge((int)((now + getRemainingMilliseconds()) / 1000) );
+        response.addCookie(refreshTokenCookie);
     }
 
     @Override
