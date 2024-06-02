@@ -15,8 +15,6 @@ public class CookieUtil {
     private final Logger log = LoggerFactory.getLogger(CookieUtil.class);
     public Cookie createCookie(String cookieName, String value){
         Cookie cookie = new Cookie(cookieName,value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
         return cookie;
     }
 
@@ -31,13 +29,5 @@ public class CookieUtil {
         return null;
     }
 
-
-    public Cookie deleteCookie(HttpServletRequest req ,String cookieName) {
-        Cookie cookie = getCookie(req, TokenType.REFRESH_TOKEN.getValue());
-        cookie.setMaxAge(0);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        return cookie;
-    }
 
 }

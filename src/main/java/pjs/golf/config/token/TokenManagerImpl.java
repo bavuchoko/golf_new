@@ -146,12 +146,15 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     @Override
     public String getStoredRefreshToken(HttpServletRequest request) {
+        log.info("refreshToken = {}", cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue());
         return cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue();
     }
 
     @Override
     public void addRefreshTokenToResponse(String refreshToken, HttpServletResponse response) {
         Cookie refreshTokenCookie = cookieUtil.createCookie(TokenType.REFRESH_TOKEN.getValue(), refreshToken);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setHttpOnly(true);
         long now = (new Date()).getTime();
         log.info("time ={}",(int)((now + getRemainingMilliseconds()) / 1000));
         refreshTokenCookie.setMaxAge((int)((now + getRemainingMilliseconds()) / 1000) );
@@ -162,7 +165,11 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
     public void logout(HttpServletRequest req, HttpServletResponse res) {
         if(cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue()) != null){
             redisUtil.deleteData(getStoredRefreshToken(req));
-            res.addCookie(cookieUtil.deleteCookie(req, TokenType.REFRESH_TOKEN.getValue()));
+            Cookie cookie = cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue());
+            cookie.setMaxAge(0);
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
+            res.addCookie(cookie);
         }
     }
 
