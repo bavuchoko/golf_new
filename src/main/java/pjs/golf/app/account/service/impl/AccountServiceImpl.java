@@ -3,14 +3,8 @@ package pjs.golf.app.account.service.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,19 +15,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import pjs.golf.app.account.entity.Gender;
 import pjs.golf.app.account.dto.AccountAdapter;
 import pjs.golf.app.account.dto.AccountRequestDto;
 import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.account.entity.AccountRole;
+import pjs.golf.app.account.entity.Gender;
 import pjs.golf.app.account.mapper.AccountMapper;
 import pjs.golf.app.account.repository.AccountJpaRepository;
 import pjs.golf.app.account.repository.querydsl.AccountQuerydslSupport;
 import pjs.golf.app.account.service.AccountService;
-import pjs.golf.app.game.GameController;
-import pjs.golf.app.game.dto.GameResponseDto;
-import pjs.golf.app.game.entity.Game;
-import pjs.golf.app.game.mapper.GameMapper;
+import pjs.golf.common.WebCommon;
 import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
 import pjs.golf.config.token.TokenManager;
 import pjs.golf.config.token.TokenType;
@@ -44,8 +35,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Service
 @RequiredArgsConstructor
@@ -95,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
         String accessToken = tokenManager.createToken(authentication, TokenType.ACCESS_TOKEN);
         String refreshToken = tokenManager.createToken(authentication, TokenType.REFRESH_TOKEN);
         tokenManager.addRefreshTokenToResponse(refreshToken, response);
-
+        redisUtil.setData(refreshToken, WebCommon.getClientIp(request));
         return accessToken;
     }
 

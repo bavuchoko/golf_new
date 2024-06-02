@@ -25,9 +25,6 @@ import pjs.golf.config.utils.CookieUtil;
 import pjs.golf.config.utils.RedisUtil;
 
 import java.security.Key;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -119,9 +116,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         String clientIP = WebCommon.getClientIp(request);
         if (validateToken(refreshTokenInCookie)) {
             String storedIP = redisUtil.getData(refreshTokenInCookie);
-            if(clientIP.equals(storedIP)){
-            return getAuthentication(refreshTokenInCookie);
-            }
+            if(clientIP.equals(storedIP)) return getAuthentication(refreshTokenInCookie);
         }
         return null;
     }
@@ -166,6 +161,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
     @Override
     public void logout(HttpServletRequest req, HttpServletResponse res) {
         if(cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue()) != null){
+            redisUtil.deleteData(getStoredRefreshToken(req));
             res.addCookie(cookieUtil.deleteCookie(req, TokenType.REFRESH_TOKEN.getValue()));
         }
     }
