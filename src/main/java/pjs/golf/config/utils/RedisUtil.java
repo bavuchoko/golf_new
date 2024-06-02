@@ -26,8 +26,8 @@ public class RedisUtil {
     public void setData(String key, String value){
         ValueOperations<String,String> valueOperations = stringRedisTemplate.opsForValue();
         if(value ==null) value = "test";
-        log.info("key ={ }" , key);
-        log.info("value ={ }" , value);
+        log.info("key ={}" , key);
+        log.info("value ={}" , value);
         valueOperations.set(key,value);
     }
 
@@ -38,7 +38,7 @@ public class RedisUtil {
     }
 
     public void deleteData(String key){
-        log.info("delete key ={ }" , key);
+        log.info("delete key ={}" , key);
         stringRedisTemplate.delete(key);
     }
 
