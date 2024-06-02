@@ -46,7 +46,6 @@ public class GameController {
     private final GameService gameService;
     private final SseEmitterService sseEmitterService;
     private final AccountService accountService;
-    private final CookieUtil cookieUtil;
     private final Logger log = LoggerFactory.getLogger(GameController.class);
 
     /**
@@ -79,8 +78,6 @@ public class GameController {
             HttpServletResponse response
     ) {
         try {
-            Cookie cookie = cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue());
-            log.info(cookie.getName());
             String jwt = request.getHeader("Authorization");
             String accessToken =null;
             if(account == null && StringUtils.hasText(jwt))
