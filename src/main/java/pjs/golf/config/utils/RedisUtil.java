@@ -25,6 +25,7 @@ public class RedisUtil {
 
     public void setData(String key, String value){
         ValueOperations<String,String> valueOperations = stringRedisTemplate.opsForValue();
+        if(value ==null) value = "test";
         log.info("key ={ }" , key);
         log.info("value ={ }" , value);
         valueOperations.set(key,value);
