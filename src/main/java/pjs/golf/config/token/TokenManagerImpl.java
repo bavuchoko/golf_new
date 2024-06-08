@@ -115,11 +115,11 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         String refreshTokenInCookie = cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue();
         String clientIP = WebCommon.getClientIp(request);
         if (validateToken(refreshTokenInCookie)) {
-            log.info("validated token ={}", refreshTokenInCookie);
             String storedIP = redisUtil.getData(refreshTokenInCookie);
+            log.info("clientIP ={}", clientIP);
+            log.info("storedIP ={}", storedIP);
             if(clientIP.equals(storedIP)) return getAuthentication(refreshTokenInCookie);
         }
-        log.info("inValidated token ={}", refreshTokenInCookie);
         return null;
     }
 
