@@ -19,7 +19,7 @@ public class RedisUtil {
 
     public String getData(String key){
         ValueOperations<String,String> valueOperations = stringRedisTemplate.opsForValue();
-        log.info("get key ={ }" , key);
+        log.info("get key ={}" , key);
         return valueOperations.get(key);
     }
 
