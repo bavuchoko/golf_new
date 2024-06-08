@@ -9,6 +9,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import pjs.golf.config.token.TokenType;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 @Component
 @RequiredArgsConstructor
 public class CookieUtil {
@@ -17,6 +21,10 @@ public class CookieUtil {
 
 
     public ResponseCookie getCookie(HttpServletRequest req, String cookieName){
+        log.info("Request URL: {}", req.getRequestURL());
+        log.info("Request Headers: {}", Collections.list(req.getHeaderNames()).stream()
+                .collect(Collectors.toMap(h -> h, req::getHeader)));
+        log.info("Request Cookies: {}", Arrays.toString(req.getCookies()));
         Cookie[] cookies = req.getCookies();
         if(cookies==null){
             log.info("cookie is null");
