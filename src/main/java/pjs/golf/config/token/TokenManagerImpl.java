@@ -57,7 +57,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
             @Value("${spring.jwt.secret}") String secret,
             @Value("${spring.jwt.token-validity-one-min}") long tokenValidityOneMin) {
         this.secret = secret;
-        // 15분
+        // 2시간
         this.accessTokenValidityTime = tokenValidityOneMin * 1 ;
     }
 
@@ -112,6 +112,8 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     @Override
     public Authentication getAuthenticationFromRefreshToken(HttpServletRequest request) {
+        log.info("get refreshToken from cookie");
+        log.info("cookie = {}",cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()));
         String refreshTokenInCookie = cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue();
         String clientIP = WebCommon.getClientIp(request);
         if (validateToken(refreshTokenInCookie)) {
