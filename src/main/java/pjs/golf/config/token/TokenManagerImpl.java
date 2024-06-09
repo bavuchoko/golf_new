@@ -167,9 +167,9 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
     @Override
     public void logout(HttpServletRequest req, HttpServletResponse res) {
         if(cookieUtil.getCookie(req, TokenType.REFRESH_TOKEN.getValue()) != null){
-            
             redisUtil.deleteData(getStoredRefreshToken(req));
         }
+        cookieUtil.removeCookie(res, TokenType.REFRESH_TOKEN.getValue());
     }
 
 

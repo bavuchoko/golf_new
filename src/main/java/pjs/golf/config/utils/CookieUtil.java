@@ -2,6 +2,7 @@ package pjs.golf.config.utils;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,5 +46,16 @@ public class CookieUtil {
         return null;
     }
 
+    public void removeCookie(HttpServletResponse response, String cookieName){
+            ResponseCookie cookie = ResponseCookie.from(TokenType.REFRESH_TOKEN.getValue(), "")
+                    .path("/")
+                    .sameSite("None")
+                    .httpOnly(true)
+                    .secure(true)
+                    .maxAge(0) // 쿠키를 즉시 만료시킵니다.
+                    .build();
+            response.addHeader("Set-Cookie", cookie.toString());
+        }
 
 }
+
