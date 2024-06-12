@@ -208,6 +208,7 @@ public class GameController {
         try {
             gameService.startGame(id, account, 1, startHole);
             EntityModel resource = gameService.getGameResource(id, account);
+            sseEmitterService.broadcast(id, resource);
             return new  ResponseEntity(resource, HttpStatus.OK);
         } catch (PermissionLimitedCustomException | InCorrectStatusCustomException | NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
