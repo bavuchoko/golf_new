@@ -33,9 +33,14 @@ public class SseEmitterService {
         else
             userId = account.getId().toString();
         SseEmitter emitter = getEmitter(gameId, userId);
-        Map<String, SseEmitter> userMap = new ConcurrentHashMap<>();
-        userMap.put(userId, emitter);
-        emitterMap.put(gameId, userMap);
+        emitterMap.computeIfAbsent(gameId, k -> new ConcurrentHashMap<>()).put(userId, emitter);
+        emitterMap.forEach((gId, uMap) -> {
+            uMap.forEach((uId, eM) -> {
+                log.error("gameId={}, userId ={}",gId, uId);
+            });
+        });
+
+
 
         //초기 연결시에 응답 데이터를 전송할 수도 있다.
         try {
@@ -48,25 +53,29 @@ public class SseEmitterService {
                     .reconnectTime(RECONNECTION_TIMEOUT);
             emitter.send(event);
         } catch (IOException e) {
-            log.error("failure send media position data, id={}, {}", gameId, e.getMessage());
+            log.error("failure send media position data, id={}, message={}", gameId, e.getMessage());
         }
+
+
         return emitter;
     }
 
     public void broadcast(Long gameId, EntityModel entityModel) {
         Map<String, SseEmitter> userMap = emitterMap.get(gameId);
-        userMap.forEach((id, player) -> {
+        userMap.forEach((userId, emitter) -> {
             try {
                 String message = getJsonString(entityModel);
-                player.send(SseEmitter.event()
-                        .name("broadcast")
+                emitter.send(SseEmitter.event()
+                        .name("broadCast")
                         .id( gameId + "_" + System.currentTimeMillis() )
                         .reconnectTime(RECONNECTION_TIMEOUT)
                         .data(message, MediaType.APPLICATION_JSON));
-                log.info("sended notification, id={}, payload={}", id, message);
+                log.info("userId = {}", userId);
+                log.info("emitter = {}", emitter);
+                log.info("message = {}", message);
             } catch (IOException e) {
                 //SSE 세션이 이미 해제된 경우
-                log.error("fail to send emitter id={}, {}", id, e.getMessage());
+                log.error("fail to send emitter id={}, {}", userId, e.getMessage());
             }
         });
     }
