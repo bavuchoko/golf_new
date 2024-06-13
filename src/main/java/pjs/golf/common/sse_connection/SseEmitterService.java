@@ -62,22 +62,26 @@ public class SseEmitterService {
 
     public void broadcast(Long gameId, EntityModel entityModel) {
         Map<String, SseEmitter> userMap = emitterMap.get(gameId);
-        userMap.forEach((userId, emitter) -> {
-            try {
-                String message = getJsonString(entityModel);
-                emitter.send(SseEmitter.event()
-                        .name("broadCast")
-                        .id( gameId + "_" + System.currentTimeMillis() )
-                        .reconnectTime(RECONNECTION_TIMEOUT)
-                        .data(message, MediaType.APPLICATION_JSON));
-                log.info("userId = {}", userId);
-                log.info("emitter = {}", emitter);
-                log.info("message = {}", message);
-            } catch (IOException e) {
-                //SSE 세션이 이미 해제된 경우
-                log.error("fail to send emitter id={}, {}", userId, e.getMessage());
-            }
-        });
+        if(userMap != null) {
+            userMap.forEach((userId, emitter) -> {
+                try {
+                    String message = getJsonString(entityModel);
+                    emitter.send(SseEmitter.event()
+                            .name("broadCast")
+                            .id(gameId + "_" + System.currentTimeMillis())
+                            .reconnectTime(RECONNECTION_TIMEOUT)
+                            .data(message, MediaType.APPLICATION_JSON));
+                    log.info("userId = {}", userId);
+                    log.info("emitter = {}", emitter);
+                    log.info("message = {}", message);
+                } catch (IOException e) {
+                    //SSE 세션이 이미 해제된 경우
+                    log.error("fail to send emitter id={}, {}", userId, e.getMessage());
+                }
+            });
+        }else{
+            log.error("nobody subscribing this game");
+        }
     }
 
     private SseEmitter getEmitter(Long gameId, String userId) {
