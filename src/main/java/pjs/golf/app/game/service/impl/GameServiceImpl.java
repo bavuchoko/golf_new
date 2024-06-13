@@ -105,7 +105,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public EntityModel enrollGame(Long id, Account account) {
         Game game= gameJpaRepository.findById(id).orElseThrow(()->new NoSuchDataException("") );
         if(game.getPlayers().size()<4 && game.getStatus().equals(GameStatus.OPEN)) {
