@@ -149,8 +149,11 @@ public class GameServiceImpl implements GameService {
     @Transactional
     public void startGame(Long id, Account account, int round, int startHole) throws Exception {
         Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
-                new NoSuchDataException("없는 데이터")
+                new NoSuchDataException("대상이 존재하지 않습니다.")
         );
+        if(!gameEntity.getStatus().equals(GameStatus.OPEN)){
+            throw new InCorrectStatusCustomException("요청을 처리할 수 없습니다.");
+        }
         try {
             if(gameEntity.getPlayers().size()>1){
                 if (gameEntity.getHost().equals(account)) {
