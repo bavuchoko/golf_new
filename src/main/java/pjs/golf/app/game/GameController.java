@@ -167,6 +167,7 @@ public class GameController {
             @CurrentUser Account account) {
         try {
             EntityModel resource = gameService.enrollGame(id, account);
+            sseEmitterService.broadcast(id, resource);
             return ResponseEntity.ok().body(resource);
         } catch (AlreadyExistSuchDataCustomException | InCorrectStatusCustomException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -188,7 +189,8 @@ public class GameController {
             return ResponseEntity.badRequest().body("로그인이 필요 합니다.");
         }
         try {
-            gameService.expelPlayer(id, account, target);
+            EntityModel resource = gameService.expelPlayer(id, account, target);
+            sseEmitterService.broadcast(id, resource);
             return new ResponseEntity(HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
@@ -228,6 +230,7 @@ public class GameController {
     ) {
         try {
             EntityModel resource = gameService.endGame(id, account);
+            sseEmitterService.broadcast(id, resource);
             return new ResponseEntity(resource,HttpStatus.OK);
         } catch (PermissionLimitedCustomException | NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);

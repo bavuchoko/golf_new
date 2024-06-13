@@ -21,7 +21,7 @@ public interface GameService {
 
     EntityModel enrollGame(Long id, Account account);
 
-    void expelPlayer(Long id, Account account, Account target);
+    EntityModel expelPlayer(Long id, Account account, Account target);
 
     void startGame(Long id, Account account, int round, int startHole) throws Exception;
 

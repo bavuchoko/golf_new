@@ -126,7 +126,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional(readOnly = true)
-    public void expelPlayer(Long id, Account account, Account target) {
+    public EntityModel expelPlayer(Long id, Account account, Account target) {
         Game entity = gameJpaRepository.findById(id).orElseThrow(
                 ()-> new NoSuchDataException("")
         );
@@ -142,6 +142,7 @@ public class GameServiceImpl implements GameService {
             if(!account.equals(target))  throw new InCorrectStatusCustomException("selfExpelAllowedException");
             else entity.getPlayers().remove(target);
         }
+        return this.getResource(entity);
     }
 
     @Override
