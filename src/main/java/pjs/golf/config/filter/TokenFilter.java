@@ -45,8 +45,12 @@ public class TokenFilter extends OncePerRequestFilter {
             } else {
                 logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
             }
-        }catch (ExpiredJwtException e){
-            request.setAttribute("error", e);
+        } catch (ExpiredJwtException e) {
+            logger.debug("만료된 JWT 토큰입니다, uri: {}", requestURI);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Expired JWT token");
+        } catch (Exception e) {
+            logger.error("JWT 토큰 처리 중 에러 발생, uri: {}", requestURI, e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "JWT token processing error");
         }
         filterChain.doFilter(request, response); // 다음 Filter를 실행하기 위한 코드. 마지막 필터라면 필터 실행 후 리소스를 반환한다.
     }
