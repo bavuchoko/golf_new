@@ -22,9 +22,9 @@ public class CookieUtil {
 
 
     public ResponseCookie getCookie(HttpServletRequest req, String cookieName){
-//        log.info("Request Headers: {}", Collections.list(req.getHeaderNames()).stream()
-//                .collect(Collectors.toMap(h -> h, req::getHeader)));
-//        log.info("Request Cookies: {}", Arrays.toString(req.getCookies()));
+        log.info("Request Headers: {}", Collections.list(req.getHeaderNames()).stream()
+                .collect(Collectors.toMap(h -> h, req::getHeader)));
+        log.info("Request Cookies: {}", Arrays.toString(req.getCookies()));
         Cookie[] cookies = req.getCookies();
         if(cookies==null){
             log.info("cookie is null");
