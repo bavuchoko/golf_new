@@ -78,19 +78,13 @@ public class GameController {
             HttpServletResponse response
     ) {
         try {
-            String jwt = request.getHeader("Authorization");
-            String accessToken =null;
-            if(account == null && StringUtils.hasText(jwt))
-                accessToken= accountService.reIssueToken(request, response);
 
             EntityModel game = gameService.getGameResource(id, account);
-
             SseEmitter subscribe = sseEmitterService.subscribe(id, account, game);
             return new ResponseEntity(subscribe, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(null, HttpStatus.NO_CONTENT);
         }
-
     }
 
     /**
