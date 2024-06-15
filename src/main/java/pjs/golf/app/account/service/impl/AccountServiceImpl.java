@@ -124,6 +124,11 @@ public class AccountServiceImpl implements AccountService {
         return accountJpaRepository.findAll(pageable);
     }
 
+    @Override
+    public boolean validateToken(String token) {
+        return tokenManager.validateToken(token);
+    }
+
 
     @Override
     public void logout(HttpServletRequest req, HttpServletResponse res) {

@@ -33,4 +33,6 @@ public interface AccountService extends UserDetailsService {
     List getUserList();
 
     Page<Account> getUserListPage(Pageable pageable);
+
+    boolean validateToken(String token);
 }

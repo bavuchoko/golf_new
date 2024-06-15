@@ -1,5 +1,6 @@
 package pjs.golf.app.account;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import pjs.golf.app.account.dto.AccountRequestDto;
 import pjs.golf.app.account.entity.Account;
@@ -68,7 +70,6 @@ public class AccountController {
 
     @GetMapping("/reissue")
     public ResponseEntity reissue(HttpServletRequest request, HttpServletResponse response) {
-
         try{
             String accessToken = accountService.reIssueToken(request, response);
             HttpHeaders httpHeaders = new HttpHeaders();
@@ -80,6 +81,23 @@ public class AccountController {
             return new ResponseEntity("fail to refresh token", HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/tokenVaildation")
+    public ResponseEntity valdationTimeCheck(@RequestHeader(name = "Authorization") String token) {
+        if(StringUtils.hasText(token)){
+            try {
+                token = token.replace("Bearer ", "");
+                if (accountService.validateToken(token)) {
+                    return new ResponseEntity(HttpStatus.OK);                       //200
+                }
+            } catch (Exception e) {
+                return new ResponseEntity(e.getMessage(), HttpStatus.UNAUTHORIZED); //401
+            }
+        }
+        return new ResponseEntity("token is empty", HttpStatus.FORBIDDEN); //403
+    }
+
+
     @GetMapping("/logout")
     public void logout(HttpServletRequest req, HttpServletResponse res){
         accountService.logout(req, res);
