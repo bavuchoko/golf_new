@@ -82,19 +82,19 @@ public class AccountController {
         }
     }
 
-    @PostMapping("/tokenVaildation")
+    @GetMapping("/validation")
     public ResponseEntity valdationTimeCheck(@RequestHeader(name = "Authorization") String token) {
         if(StringUtils.hasText(token)){
             try {
                 token = token.replace("Bearer ", "");
                 if (accountService.validateToken(token)) {
-                    return new ResponseEntity(HttpStatus.OK);                       //200
+                    return new ResponseEntity(token, HttpStatus.OK);                       //200
                 }
             } catch (Exception e) {
-                return new ResponseEntity(e.getMessage(), HttpStatus.UNAUTHORIZED); //401
+                return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN); //403
             }
         }
-        return new ResponseEntity("token is empty", HttpStatus.FORBIDDEN); //403
+        return new ResponseEntity("token is empty", HttpStatus.UNAUTHORIZED); //401
     }
 
 
