@@ -216,7 +216,7 @@ public class GameServiceImpl implements GameService {
         WebMvcLinkBuilder selfLink = linkTo(GameController.class).slash(gameResponseDto.getId());
         EntityModel resource = EntityModel.of(gameResponseDto);
         if(account != null && game.getHost().equals(account)){
-            resource.add(linkTo(GameController.class).slash("score").withRel("update"));
+            resource.add(linkTo(GameController.class).slash("score").withRel("update-content"));
         }
         resource.add(selfLink.withRel("query-content"));
 
