@@ -1,4 +1,4 @@
-= API 문서 (세종파크골프)
+= API 문서 (골프)
 api document for test
 :doctype: book
 :icons: font

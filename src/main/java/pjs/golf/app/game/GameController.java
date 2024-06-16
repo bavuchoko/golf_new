@@ -80,7 +80,7 @@ public class GameController {
         try {
 
             EntityModel game = gameService.getGameResource(id, account);
-            SseEmitter subscribe = sseEmitterService.subscribe(id, account, game);
+            SseEmitter subscribe = sseEmitterService.subscribe(id, account, game, request);
             return new ResponseEntity(subscribe, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(null, HttpStatus.NO_CONTENT);
@@ -233,5 +233,17 @@ public class GameController {
         }
     }
 
+//    @GetMapping("/{id}/close-conect")
+//    public void closeGameSseConnection(
+//            @PathVariable("id") Long id,
+//            @CurrentUser Account account
+//    ) {
+//        try {
+//
+//            sseEmitterService.closeConnection(id, account);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

@@ -3,6 +3,7 @@ package pjs.golf.common.sse_connection;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.EntityModel;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.game.dto.GameResponseDto;
+import pjs.golf.common.WebCommon;
 
 import java.io.IOException;
 import java.util.Map;
@@ -26,10 +28,10 @@ public class SseEmitterService {
     private static final long RECONNECTION_TIMEOUT = 1000L;
     private final Logger log = LoggerFactory.getLogger(SseEmitterService.class);
 
-    public SseEmitter subscribe(Long gameId, Account account, EntityModel entityModel) {
-        String userId =null;
+    public SseEmitter subscribe(Long gameId, Account account, EntityModel entityModel, HttpServletRequest request) {
+        String userId ;
         if(account==null)
-            userId = UUID.randomUUID().toString();
+            userId = WebCommon.getClientIp(request);
         else
             userId = account.getId().toString();
         SseEmitter emitter = getEmitter(gameId, userId);
@@ -116,5 +118,13 @@ public class SseEmitterService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper.writeValueAsString(entityModel);
+    }
+
+    public void closeConnection(Long gameId, Account account, HttpServletRequest request) {
+        log.info("request to disConnect game id ={} , account id ={}", gameId, account !=null ? account.getId() : null);
+        if(account != null)
+            emitterMap.get(gameId).remove(account.getId());
+        else
+            emitterMap.get(gameId).remove(WebCommon.getClientIp(request));
     }
 }
