@@ -29,18 +29,20 @@ public class SheetController {
     /**
      * 점수입력
      * */
-    @PutMapping("/score/{id}")
+    @PutMapping("/score/{gameId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity updateScore(
-            @PathVariable("id") Long id,
+            @PathVariable("gameId") Long gameId,
             @RequestBody SheetRequestDto sheetRequestDto,
             @CurrentUser Account account){
         try {
-//            Game game = gameService.getGameInfo(sheetRequestDto.getGame().getId());
-            List list = sheetService.updateScore(sheetRequestDto, sheetRequestDto.getGame(), account);
-            EntityModel resource = gameService.getGameResource(sheetRequestDto.getGame().getId(), account);
-            sseEmitterService.broadcast(id, resource);
-            return new ResponseEntity(list,HttpStatus.OK);
+
+            Game game = gameService.getGameInfo(sheetRequestDto.getGame().getId());
+
+            sheetService.updateScore(sheetRequestDto, game, account);
+            EntityModel resource = gameService.getGameResource(gameId, account);
+            sseEmitterService.broadcast(gameId, resource);
+            return new ResponseEntity(resource ,HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

@@ -7,7 +7,7 @@ import pjs.golf.app.sheet.dto.SheetRequestDto;
 import java.util.List;
 
 public interface SheetService {
-    List updateScore(SheetRequestDto sheetRequestDto, Game game, Account account);
+    void updateScore(SheetRequestDto sheetRequestDto, Game game, Account account);
 
     List nextRound(Account account, Game game, int round);
 }
