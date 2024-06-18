@@ -80,7 +80,7 @@ public class GameController {
         try {
 
             EntityModel game = gameService.getGameResource(id, account);
-            SseEmitter subscribe = sseEmitterService.subscribe(id, account, game, request);
+            SseEmitter subscribe = sseEmitterService.subscribe(id, game, request);
             return new ResponseEntity(subscribe, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(null, HttpStatus.NO_CONTENT);
@@ -173,18 +173,18 @@ public class GameController {
     /**
      * 경기퇴장
      */
-    @PutMapping("/expel/{id}")
+    @PutMapping("/expel/{gameId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity expelPlayer(
-            @PathVariable("id") Long id,
+            @PathVariable("gameId") Long gameId,
             @CurrentUser Account account,
             @RequestBody Account target) {
         if (account == null) {
             return ResponseEntity.badRequest().body("로그인이 필요 합니다.");
         }
         try {
-            EntityModel resource = gameService.expelPlayer(id, account, target);
-            sseEmitterService.broadcast(id, resource);
+            EntityModel resource = gameService.expelPlayer(gameId, account, target);
+            sseEmitterService.broadcast(gameId, resource);
             return new ResponseEntity(HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
@@ -194,17 +194,17 @@ public class GameController {
     /**
      * 경기시작
      */
-    @PutMapping("/play/{id}")
+    @PutMapping("/play/{gameId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity startGame(
-            @PathVariable("id") Long id,
+            @PathVariable("gameId") Long gameId,
             @RequestParam("startHole") int startHole,
             @CurrentUser Account account
     ) {
         try {
-            gameService.startGame(id, account, 1, startHole);
-            EntityModel resource = gameService.getGameResource(id, account);
-            sseEmitterService.broadcast(id, resource);
+            gameService.startGame(gameId, account, 1, startHole);
+            EntityModel resource = gameService.getGameResource(gameId, account);
+            sseEmitterService.broadcast(gameId, resource);
             return new  ResponseEntity(resource, HttpStatus.OK);
         } catch (PermissionLimitedCustomException | InCorrectStatusCustomException | NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -216,15 +216,15 @@ public class GameController {
     /**
      * 경기종료
      */
-    @PutMapping("/end/{id}")
+    @PutMapping("/end/{gameId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity ebdGame(
-            @PathVariable("id") Long id,
+            @PathVariable("gameId") Long gameId,
             @CurrentUser Account account
     ) {
         try {
-            EntityModel resource = gameService.endGame(id, account);
-            sseEmitterService.broadcast(id, resource);
+            EntityModel resource = gameService.endGame(gameId, account);
+            sseEmitterService.broadcast(gameId, resource);
             return new ResponseEntity(resource,HttpStatus.OK);
         } catch (PermissionLimitedCustomException | NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -245,5 +245,14 @@ public class GameController {
 //            e.printStackTrace();
 //        }
 //    }
+
+
+    @GetMapping("/{gameId}/disconnect")
+    public void disconnect(
+            @PathVariable("gameId") Long gameId,
+            HttpServletRequest request
+    ) {
+        sseEmitterService.disconnect(gameId, request);
+    }
 
 }
