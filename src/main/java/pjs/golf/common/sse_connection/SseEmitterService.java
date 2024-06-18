@@ -24,25 +24,25 @@ import java.util.logging.LogManager;
 public class SseEmitterService {
 
     private final Map<Long, Map<String, SseEmitter>> emitterMap = new ConcurrentHashMap<>();
-    private static final Long TIMEOUT = 120L * 1000 * 60;
+    private static final Long TIMEOUT = 1L * 1000 * 60 * 2;
     private static final long RECONNECTION_TIMEOUT = 1000L;
     private final Logger log = LoggerFactory.getLogger(SseEmitterService.class);
 
-    public SseEmitter subscribe(Long gameId, Account account, EntityModel entityModel, HttpServletRequest request) {
-        String userId ;
-        if(account==null)
-            userId = WebCommon.getClientIp(request);
-        else
-            userId = account.getId().toString();
-        SseEmitter emitter = getEmitter(gameId, userId);
-        emitterMap.computeIfAbsent(gameId, k -> new ConcurrentHashMap<>()).put(userId, emitter);
+    public SseEmitter subscribe(Long gameId, EntityModel entityModel, HttpServletRequest request) {
+
+         String userIp = WebCommon.getClientIp(request);
+
+        SseEmitter emitter = getEmitter(userIp);
+        emitterMap.computeIfAbsent(gameId, k -> new ConcurrentHashMap<>()).put(userIp, emitter);
         emitterMap.forEach((gId, uMap) -> {
             uMap.forEach((uId, eM) -> {
                 log.error("gameId={}, userId ={}",gId, uId);
             });
+
+
+
+
         });
-
-
 
         //초기 연결시에 응답 데이터를 전송할 수도 있다.
         try {
@@ -57,7 +57,6 @@ public class SseEmitterService {
         } catch (IOException e) {
             log.error("failure send media position data, id={}, message={}", gameId, e.getMessage());
         }
-
 
         return emitter;
     }
@@ -86,30 +85,28 @@ public class SseEmitterService {
         }
     }
 
-    private SseEmitter getEmitter(Long gameId, String userId) {
-
+    private SseEmitter getEmitter(String userIp) {
         SseEmitter emitter = new SseEmitter(TIMEOUT);
         //연결 세션 timeout 이벤트 핸들러 등록
         emitter.onTimeout(() -> {
-            log.info("server sent event timed out : id={}", userId);
+            log.info("server sent event timed out : userIp={}", userIp);
             //onCompletion 핸들러 호출
             emitter.complete();
         });
 
         //에러 핸들러 등록
         emitter.onError(e -> {
-            log.info("server sent event error occurred : id={}, message={}", userId, e.getMessage());
+            log.info("server sent event error occurred : userIp={}, message={}", userIp, e.getMessage());
             //onCompletion 핸들러 호출
             emitter.complete();
         });
 
         //SSE complete 핸들러 등록
         emitter.onCompletion(() -> {
-            if (emitterMap.get(gameId).remove(userId) != null) {
-                log.info("server sent event removed in emitter cache: id={}", userId);
-            }
-            log.info("disconnected by completed server sent event: id={}", userId);
+            System.out.println("SSE connection completed");
+            // 연결 완료 시의 처리 로직
         });
+
         return emitter;
     }
 
@@ -120,11 +117,15 @@ public class SseEmitterService {
         return objectMapper.writeValueAsString(entityModel);
     }
 
-    public void closeConnection(Long gameId, Account account, HttpServletRequest request) {
-        log.info("request to disConnect game id ={} , account id ={}", gameId, account !=null ? account.getId() : null);
-        if(account != null)
-            emitterMap.get(gameId).remove(account.getId());
-        else
-            emitterMap.get(gameId).remove(WebCommon.getClientIp(request));
+    public void disconnect(Long gameId,HttpServletRequest request) {
+        String userIp = WebCommon.getClientIp(request);
+        try {
+            emitterMap.get(gameId).remove(userIp);
+            log.info("request to disConnect gameId ={} , userIp ={}", gameId, userIp);
+        }catch (Exception e){
+            log.info("destroy connection failed gameId ={} , userIp ={}", gameId, userIp);
+        }
     }
+
+
 }
