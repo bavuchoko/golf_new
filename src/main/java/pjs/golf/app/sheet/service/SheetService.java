@@ -9,5 +9,6 @@ import java.util.List;
 public interface SheetService {
     void updateScore(SheetRequestDto sheetRequestDto, Game game, Account account);
 
-    List nextRound(Account account, Game game, int round);
+    void startRound(Account account, Game game, int round);
+    void nextRound(Account account, Game game);
 }

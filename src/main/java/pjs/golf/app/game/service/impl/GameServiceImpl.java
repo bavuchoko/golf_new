@@ -160,7 +160,7 @@ public class GameServiceImpl implements GameService {
                     gameEntity.initRound(round);
                     gameEntity.initStartHole(startHole);
                     gameEntity.changeStatus(GameStatus.PLAYING);
-                    sheetService.nextRound(account, gameEntity, round);
+                    sheetService.startRound(account, gameEntity, round);
                 } else {
                     throw new PermissionLimitedCustomException("권한이 없습니다.");
                 }

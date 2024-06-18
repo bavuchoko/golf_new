@@ -36,7 +36,22 @@ public class SheetServiceImpl implements SheetService {
     }
 
     @Override
-    public List nextRound(Account account, Game game, int round) {
+    public void nextRound(Account account, Game game) {
+        List<Account> players = game.getPlayers();
+        if(game.getHost().equals(account)) {
+            players.forEach(e -> {
+                Sheet sheet = Sheet.builder()
+                        .game(game)
+                        .round(currentRount + 1)
+                        .player(e)
+                        .hit(0).build();
+                sheetJpaRepository.save(sheet);
+            });
+        }
+    }
+
+    @Override
+    public void startRound(Account account, Game game, int round) {
         List<Account> players = game.getPlayers();
         if(game.getHost().equals(account)) {
             players.forEach(e -> {
@@ -48,8 +63,6 @@ public class SheetServiceImpl implements SheetService {
                 sheetJpaRepository.save(sheet);
             });
         }
-        return sheetJpaRepository.findAllByGame(game);
     }
-
 
 }
