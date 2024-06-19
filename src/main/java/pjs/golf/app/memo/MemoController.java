@@ -23,13 +23,13 @@ public class MemoController {
     /**
      * 메모 목록조회
      * */
-    @GetMapping("/{id}")
+    @GetMapping("/{fieldId}")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity getFieldList(
-            @PathVariable("id") Long id,
+            @PathVariable("fieldId") Long fieldId,
             @CurrentUser Account account
             ) {
-        List resources = memoService.getMemosByFieldAndUser(id, account);
+        List resources = memoService.getMemosByFieldAndUser(fieldId, account);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
 
