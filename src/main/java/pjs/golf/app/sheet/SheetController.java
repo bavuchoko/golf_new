@@ -51,16 +51,16 @@ public class SheetController {
     /**
      * 다음 라운드
      * */
-    @PostMapping("/next-round/{id}")
+    @PostMapping("/next-round/{gameId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity nextRound(
-            @PathVariable Long id,
+            @PathVariable Long gameId,
             @CurrentUser Account account){
         try {
-            Game game = gameService.getGameInfo(id);
+            Game game = gameService.getGameInfo(gameId);
             sheetService.nextRound(account, game);
             EntityModel resource = gameService.getGameResource(game.getId(), account);
-            sseEmitterService.broadcast(id, resource);
+            sseEmitterService.broadcast(gameId, resource);
             return new ResponseEntity(resource,HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
