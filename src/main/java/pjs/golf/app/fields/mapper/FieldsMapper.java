@@ -2,6 +2,7 @@ package pjs.golf.app.fields.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 import pjs.golf.app.account.mapper.AccountMapper;
@@ -16,6 +17,7 @@ public interface FieldsMapper {
 
     Fields toEntity(FieldsRequestDto fieldsRequestDto);
 
+    @Named("toFieldDto")
     @Mapping(source = "register", target = "register", qualifiedByName = "accountResponse")
-    FieldsResponseDto toDto(Fields fields);
+    FieldsResponseDto toFieldDto(Fields fields);
 }

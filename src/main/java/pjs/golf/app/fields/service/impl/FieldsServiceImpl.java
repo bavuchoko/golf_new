@@ -96,7 +96,7 @@ public class FieldsServiceImpl implements FieldsService {
     }
     private CollectionModel getResources(Page<Fields> fields, PagedResourcesAssembler<Fields> assembler) {
         var pageResources = assembler.toModel(fields, entity ->
-                EntityModel.of(FieldsMapper.Instance.toDto(entity))
+                EntityModel.of(FieldsMapper.Instance.toFieldDto(entity))
                         .add(linkTo(FieldsController.class).withRel("query-content"))
                         .add(linkTo(FieldsController.class).withSelfRel())
         );
