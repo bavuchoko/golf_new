@@ -18,7 +18,7 @@ public class GameResponseDto {
     private Long id;
     private int round;
     private AccountResponseDto host;
-    private int startHole;
+    private int hole;
     private LocalDateTime playDate;
     private FieldsResponseDto field;
     private List<AccountResponseDto> players;

@@ -147,7 +147,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void startGame(Long id, Account account, int round, int startHole) throws Exception {
+    public void startGame(Long id, Account account, int round, int hole) throws Exception {
         Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
                 new NoSuchDataException("대상이 존재하지 않습니다.")
         );
@@ -157,10 +157,10 @@ public class GameServiceImpl implements GameService {
         try {
             if(gameEntity.getPlayers().size()>1){
                 if (gameEntity.getHost().equals(account)) {
-                    gameEntity.initRound(round);
-                    gameEntity.initStartHole(startHole);
+                    gameEntity.updateRound(round);
+                    gameEntity.insertHole(hole);
                     gameEntity.changeStatus(GameStatus.PLAYING);
-                    sheetService.startRound(account, gameEntity, round);
+                    sheetService.progressRound(account.getId(), gameEntity.getId(), round);
                 } else {
                     throw new PermissionLimitedCustomException("권한이 없습니다.");
                 }
@@ -231,6 +231,15 @@ public class GameServiceImpl implements GameService {
         resource.add(selfLink.withRel("query-content"));
 
         return resource;
+    }
+
+    @Override
+    @Transactional
+    public void progressRound(Long gameId) {
+        Game game = gameJpaRepository.findById(gameId).orElseThrow(()->new NoSuchDataException("해당 경기 없읍"));
+        int nextRound =game.getRound()+1;
+
+        game.updateRound(nextRound);
     }
 
     public CollectionModel getPageResources(PagedResourcesAssembler<Game> assembler, Page<Game> game, Account account) {

@@ -10,9 +10,8 @@ import pjs.golf.app.account.entity.Account;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SheetRequestDto {
-    private Long id;
     private Game game;
-    private Account player;
     private int round;
+    private Account player;
     private int hit;
 }

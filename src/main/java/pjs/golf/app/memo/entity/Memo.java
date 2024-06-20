@@ -10,7 +10,6 @@ import pjs.golf.app.account.entity.Account;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of="id", callSuper = false)
 @IdClass(MemoId.class)
 public class Memo {
 

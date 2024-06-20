@@ -29,7 +29,7 @@ public class Game {
     private Account host;
 
 
-    private int startHole;
+    private int hole;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime playDate;
@@ -62,10 +62,10 @@ public class Game {
     public void removeGame() {
         this.isRemoved =true;
     }
-    public void initStartHole(int startHole) {
-        this.startHole =startHole;
+    public void insertHole(int hole) {
+        this.hole =hole;
     }
-    public void initRound(int  round) {
+    public void updateRound(int  round) {
         this.round =round;
     }
 }

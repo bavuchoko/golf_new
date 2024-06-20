@@ -131,7 +131,7 @@ class GameControllerTest extends BaseControllerTest {
     public void startGame() throws Exception {
         String token =TestHelper.getBaererToken(accountService, "test_user1");
         mockMvc.perform(put("/api/game/play/{id}",1)
-                         .param("startHole", "1")
+                         .param("hole", "1")
                         .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status").value(GameStatus.PLAYING.toString()))

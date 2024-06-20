@@ -198,11 +198,11 @@ public class GameController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity startGame(
             @PathVariable("gameId") Long gameId,
-            @RequestParam("startHole") int startHole,
+            @RequestParam("hole") int hole,
             @CurrentUser Account account
     ) {
         try {
-            gameService.startGame(gameId, account, 1, startHole);
+            gameService.startGame(gameId, account, 1, hole);
             EntityModel resource = gameService.getGameResource(gameId, account);
             sseEmitterService.broadcast(gameId, resource);
             return new  ResponseEntity(resource, HttpStatus.OK);

@@ -11,9 +11,8 @@ import pjs.golf.app.account.dto.AccountResponseDto;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SheetResponseDto {
-    private Long id;
     private GameResponseDto game;
-    private AccountResponseDto player;
     private int round;
+    private AccountResponseDto player;
     private int hit;
 }

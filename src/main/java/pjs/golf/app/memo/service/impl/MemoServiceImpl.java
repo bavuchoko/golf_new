@@ -66,10 +66,10 @@ public class MemoServiceImpl implements MemoService {
 
 
     @Override
-    public List deleteMemo(Long memoId,Long fieldId, Account account) {
+    public List deleteMemo(Account account, Long fieldId, int round) {
 
         Fields fields = Fields.builder().id(fieldId).build();
-        memoJpaRepository.deleteById(memoId);
+        memoJpaRepository.deleteMemoByAccountAndFieldAndRound(account,fields, round);
         return getResources(memoJpaRepository.findByFieldAndAccount(fields, account));
     }
 

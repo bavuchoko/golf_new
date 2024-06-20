@@ -63,14 +63,14 @@ public class MemoController {
     /**
      * 메모 삭제
      * */
-    @DeleteMapping("{memoId}/{fieldId}")
+    @DeleteMapping("{fieldId}/{round}")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity deleteMemo(
-            @PathVariable Long memoId,
             @PathVariable Long fieldId,
+            @PathVariable int round,
             @CurrentUser Account account
     ) {
-        List resources = memoService.deleteMemo(memoId, fieldId, account);
+        List resources = memoService.deleteMemo(account, fieldId, round);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
     

@@ -57,9 +57,9 @@ public class SheetController {
             @PathVariable Long gameId,
             @CurrentUser Account account){
         try {
-            Game game = gameService.getGameInfo(gameId);
-            sheetService.nextRound(account, game);
-            EntityModel resource = gameService.getGameResource(game.getId(), account);
+            sheetService.progressRound(account.getId(), gameId);
+            gameService.progressRound(gameId);
+            EntityModel resource = gameService.getGameResource(gameId, account);
             sseEmitterService.broadcast(gameId, resource);
             return new ResponseEntity(resource,HttpStatus.OK);
         } catch (NoSuchDataException e) {

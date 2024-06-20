@@ -10,20 +10,22 @@ import pjs.golf.app.account.entity.Account;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of="id", callSuper = false)
+@IdClass(SheetId.class)
 public class Sheet {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne
     private Game game;
 
+    @Id
+    private int round;
+
+    @Id
     @ManyToOne
     @JoinColumn(name = "player")
     private Account player;
-    private int round;
+
+
     private int hit;
 
 
