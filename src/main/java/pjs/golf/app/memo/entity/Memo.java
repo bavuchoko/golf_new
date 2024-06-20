@@ -11,20 +11,25 @@ import pjs.golf.app.account.entity.Account;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of="id", callSuper = false)
+@IdClass(MemoId.class)
 public class Memo {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String content;
-
     private int round;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "field")
     private Fields field;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "account")
     private Account account;
+
+    private String content;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

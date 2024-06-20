@@ -53,6 +53,11 @@ public class FieldsServiceImpl implements FieldsService {
     }
 
     @Override
+    public Fields getField(Long fieldId) {
+        return fieldsJpaRepository.findById(fieldId).orElseThrow(()->new NoSuchDataException("해당 경기장 없음"));
+    }
+
+    @Override
     @Transactional
     public EntityModel updateFields(FieldsRequestDto fieldsDto, Account account) {
         Fields fields = fieldsJpaRepository.findById(fieldsDto.getId()).orElseThrow(()->new NoSuchDataException(""));

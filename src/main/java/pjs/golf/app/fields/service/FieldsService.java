@@ -18,6 +18,7 @@ public interface FieldsService {
     EntityModel createField(FieldsRequestDto fields, Account account);
 
     EntityModel getFieldInfo(Long id, Account account);
+    Fields getField(Long id);
 
     EntityModel updateFields(FieldsRequestDto fieldsDto, Account account);
 

@@ -9,7 +9,8 @@ public interface MemoService {
     List getMemosByFieldAndUser(Long id, Account account);
 
 
-    List createOrUpdateMemo(MemoRequestDto memoRequestDto, Account account);
+    List createMemo(MemoRequestDto memoRequestDto, Account account);
+    List updateMemo(MemoRequestDto memoRequestDto, Account account);
 
     List deleteMemo(Long memoId, Long fieldId, Account account);
 }

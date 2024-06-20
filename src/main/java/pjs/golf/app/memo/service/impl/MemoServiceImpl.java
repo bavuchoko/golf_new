@@ -8,10 +8,13 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pjs.golf.app.account.service.AccountService;
 import pjs.golf.app.fields.FieldsController;
 import pjs.golf.app.fields.entity.Fields;
 import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.fields.mapper.FieldsMapper;
+import pjs.golf.app.fields.service.FieldsService;
 import pjs.golf.app.game.GameController;
 import pjs.golf.app.game.dto.GameResponseDto;
 import pjs.golf.app.game.entity.Game;
@@ -31,18 +34,36 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class MemoServiceImpl implements MemoService {
 
     private final MemoJpaRepository memoJpaRepository;
+    private final AccountService accountService;
+    private final FieldsService fieldsService;
     @Override
     public List getMemosByFieldAndUser(Long id, Account account) {
         Fields fields = Fields.builder().id(id).build();
-        return getResources(memoJpaRepository.findByFieldAndAccount(fields, account));
+        return getResources(memoJpaRepository.findMemoByAccountAndField(account, fields));
     }
 
     @Override
-    public List createOrUpdateMemo(MemoRequestDto memoRequestDto, Account account) {
-        memoRequestDto.setAccount(account);
+    @Transactional
+    public List createMemo(MemoRequestDto memoRequestDto, Account account) {
+        Account user = accountService.getAccount(account.getId());
+        Fields fields = fieldsService.getField(memoRequestDto.getField().getId());
+        memoRequestDto.setAccount(user);
+        memoRequestDto.setField(fields);
         memoJpaRepository.save(MemoMapper.Instance.toEntity(memoRequestDto));
+
         return getResources(memoJpaRepository.findByFieldAndAccount(memoRequestDto.getField(), account));
     }
+
+    @Override
+    @Transactional
+    public List updateMemo(MemoRequestDto memoRequestDto, Account account) {
+        Memo memo = memoJpaRepository.findMemoByAccountAndFieldAndRound(account, memoRequestDto.getField(), memoRequestDto.getRound());
+        memo.updateContent(memoRequestDto.getContent());
+        return getResources(memoJpaRepository.findByFieldAndAccount(memoRequestDto.getField(), account));
+    }
+
+
+
 
     @Override
     public List deleteMemo(Long memoId,Long fieldId, Account account) {

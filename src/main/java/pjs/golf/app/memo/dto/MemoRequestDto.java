@@ -10,9 +10,8 @@ import pjs.golf.app.account.entity.Account;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemoRequestDto {
-    private Long id;
-    private String content;
-    private Fields field;
     private int round;
+    private Fields field;
     private Account account;
+    private String content;
 }

@@ -29,6 +29,7 @@ import pjs.golf.app.account.repository.querydsl.AccountQuerydslSupport;
 import pjs.golf.app.account.service.AccountService;
 import pjs.golf.common.WebCommon;
 import pjs.golf.common.exception.AlreadyExistSuchDataCustomException;
+import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.config.token.TokenManager;
 import pjs.golf.config.token.TokenType;
 import pjs.golf.config.utils.CookieUtil;
@@ -112,6 +113,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void deleteAccount(Account account) {
         accountJpaRepository.delete(account);
+    }
+
+    @Override
+    public Account getAccount(Long userId) {
+        return accountJpaRepository.findById(userId).orElseThrow(()->new NoSuchDataException("해당 유저 없음"));
     }
 
     @Override

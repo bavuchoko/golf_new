@@ -17,6 +17,7 @@ import java.util.List;
 public interface AccountService extends UserDetailsService {
 
     Account createAccount(AccountRequestDto accountRequestDto);
+    Account getAccount(Long userid);
 
     String authorize(AccountRequestDto accountRequestDto, HttpServletResponse response, HttpServletRequest request);
 

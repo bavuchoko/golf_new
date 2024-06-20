@@ -43,7 +43,7 @@ public class MemoController {
             @RequestBody MemoRequestDto memoRequestDto,
             @CurrentUser Account account
     ) {
-        List resources = memoService.createOrUpdateMemo(memoRequestDto, account);
+        List resources = memoService.createMemo(memoRequestDto, account);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
     
@@ -56,7 +56,7 @@ public class MemoController {
             @RequestBody MemoRequestDto memoRequestDto,
             @CurrentUser Account account
     ) {
-        List resources = memoService.createOrUpdateMemo(memoRequestDto, account);
+        List resources = memoService.updateMemo(memoRequestDto, account);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
 
