@@ -1,8 +1,9 @@
 package pjs.golf.app.sheet.service.impl;
 
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pjs.golf.app.account.repository.AccountJpaRepository;
 import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.account.entity.Account;
@@ -59,6 +60,7 @@ public class SheetServiceImpl implements SheetService {
         }
     }
     @Override
+    @Transactional
     public void progressRound(Long accountId, Long gameId) {
         Game game = gameJpaRepository.findById(gameId).orElseThrow(()->new NoSuchDataException("해당경기 없음"));
         Account account = accountJpaRepository.findById(accountId).orElseThrow(()->new NoSuchDataException("해당유저 없음"));
