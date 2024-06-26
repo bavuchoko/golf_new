@@ -25,6 +25,7 @@ public class Sheet {
     @JoinColumn(name = "player")
     private Account player;
 
+    private int hole;
 
     private int hit;
 

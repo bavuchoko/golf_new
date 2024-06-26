@@ -44,7 +44,7 @@ public class SheetServiceImpl implements SheetService {
 
 
     @Override
-    public void progressRound(Long accountId, Long gameId, int round) {
+    public void startRound(Long accountId, Long gameId, int round, int hole) {
         Game game = gameJpaRepository.findById(gameId).orElseThrow(()->new NoSuchDataException("해당경기 없음"));
         Account account = accountJpaRepository.findById(accountId).orElseThrow(()->new NoSuchDataException("해당유저 없음"));
         List<Account> players = game.getPlayers();
@@ -53,6 +53,7 @@ public class SheetServiceImpl implements SheetService {
                 Sheet sheet = Sheet.builder()
                         .game(game)
                         .round(round)
+                        .hole(hole)
                         .player(e)
                         .hit(0).build();
                 sheetJpaRepository.save(sheet);
@@ -65,14 +66,15 @@ public class SheetServiceImpl implements SheetService {
         Game game = gameJpaRepository.findById(gameId).orElseThrow(()->new NoSuchDataException("해당경기 없음"));
         Account account = accountJpaRepository.findById(accountId).orElseThrow(()->new NoSuchDataException("해당유저 없음"));
 
-        int nextRound = game.getRound()+1;
+
 
         List<Account> players = game.getPlayers();
         if(game.getHost().equals(account)) {
             players.forEach(e -> {
                 Sheet sheet = Sheet.builder()
                         .game(game)
-                        .round(nextRound)
+                        .round(game.getRound())
+                        .hole(game.getHole())
                         .player(e)
                         .hit(0).build();
                 sheetJpaRepository.save(sheet);

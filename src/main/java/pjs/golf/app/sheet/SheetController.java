@@ -16,8 +16,6 @@ import pjs.golf.common.CurrentUser;
 import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.common.sse_connection.SseEmitterService;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(value = "/api/sheet", produces = "application/json;charset=UTF-8")
 @RequiredArgsConstructor
@@ -57,8 +55,8 @@ public class SheetController {
             @PathVariable Long gameId,
             @CurrentUser Account account){
         try {
+            gameService.progressGame(gameId);
             sheetService.progressRound(account.getId(), gameId);
-            gameService.progressRound(gameId);
             EntityModel resource = gameService.getGameResource(gameId, account);
             sseEmitterService.broadcast(gameId, resource);
             return new ResponseEntity(resource,HttpStatus.OK);

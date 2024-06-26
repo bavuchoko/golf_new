@@ -160,7 +160,7 @@ public class GameServiceImpl implements GameService {
                     gameEntity.updateRound(round);
                     gameEntity.insertHole(hole);
                     gameEntity.changeStatus(GameStatus.PLAYING);
-                    sheetService.progressRound(account.getId(), gameEntity.getId(), round);
+                    sheetService.startRound(account.getId(), gameEntity.getId(), round, hole);
                 } else {
                     throw new PermissionLimitedCustomException("권한이 없습니다.");
                 }
@@ -235,7 +235,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void progressRound(Long gameId) {
+    public void progressGame(Long gameId) {
         Game game = gameJpaRepository.findById(gameId).orElseThrow(()->new NoSuchDataException("해당 경기 없읍"));
         game.progressRound();
     }

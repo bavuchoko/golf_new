@@ -33,5 +33,5 @@ public interface GameService {
 
     EntityModel getResource(Game game);
 
-    void progressRound(Long gameId);
+    void progressGame(Long gameId);
 }
