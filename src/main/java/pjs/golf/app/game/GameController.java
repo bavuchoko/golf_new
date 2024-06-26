@@ -1,8 +1,6 @@
 package pjs.golf.app.game;
 
 
-import io.netty.util.internal.StringUtil;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import pjs.golf.app.account.service.AccountService;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.dto.GameStatus;
 import pjs.golf.app.game.entity.Game;
 import pjs.golf.app.game.service.GameService;
-import pjs.golf.app.account.entity.Account;
 import pjs.golf.common.CurrentUser;
 import pjs.golf.common.SearchDto;
 import pjs.golf.common.WebCommon;
@@ -34,9 +30,6 @@ import pjs.golf.common.exception.InCorrectStatusCustomException;
 import pjs.golf.common.exception.NoSuchDataException;
 import pjs.golf.common.exception.PermissionLimitedCustomException;
 import pjs.golf.common.sse_connection.SseEmitterService;
-import pjs.golf.config.token.TokenManagerImpl;
-import pjs.golf.config.token.TokenType;
-import pjs.golf.config.utils.CookieUtil;
 
 @RestController
 @RequestMapping(value = "/api/game", produces = "application/json;charset=UTF-8")
@@ -45,7 +38,7 @@ public class GameController {
 
     private final GameService gameService;
     private final SseEmitterService sseEmitterService;
-    private final AccountService accountService;
+
     private final Logger log = LoggerFactory.getLogger(GameController.class);
 
     /**
