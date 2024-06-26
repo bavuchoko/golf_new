@@ -237,9 +237,7 @@ public class GameServiceImpl implements GameService {
     @Transactional
     public void progressRound(Long gameId) {
         Game game = gameJpaRepository.findById(gameId).orElseThrow(()->new NoSuchDataException("해당 경기 없읍"));
-        int nextRound =game.getRound()+1;
-
-        game.updateRound(nextRound);
+        game.progressRound();
     }
 
     public CollectionModel getPageResources(PagedResourcesAssembler<Game> assembler, Page<Game> game, Account account) {
