@@ -32,7 +32,7 @@ public class SheetServiceImpl implements SheetService {
     @Override
     @Transactional
     public void updateScore(SheetRequestDto sheetRequestDto, Game game, Account account) {
-            Sheet sheet = sheetJpaRepository.findByGameAndPlayerAndRound(game, account, sheetRequestDto.getRound())
+            Sheet sheet = sheetJpaRepository.findByGameAndPlayerAndRound(game, sheetRequestDto.getPlayer(), sheetRequestDto.getRound())
                     .orElseThrow(() -> new NoSuchDataException(""));
         //요청된 점수가 동일하면 굳이 업데이트 할 필요가 없음
         if(sheet.getHit() != sheetRequestDto.getHit()) {
