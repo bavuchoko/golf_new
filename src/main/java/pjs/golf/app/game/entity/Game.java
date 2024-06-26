@@ -72,23 +72,17 @@ public class Game {
 
 
         int base = 9;
-        int share = this.round / base;
         int remainder = this.hole % base;
 
         if( remainder != 0){ //마지막홀이 아님
-            if(this.round % base == 0){ //홀은 중간인데 라운드는 해당 코스의 마지막 라운드임
-                this.hole = this.hole +10;
-            }else{ //홀도 중간이고 해당 코스 진행중임.
-                ++this.hole;
+            if(round % base == 0){ //홀은 중간인데 라운드는 해당 코스의 마지막 라운드임
+                ++hole;
+            }else{ //홀 번호도 중간이고 해당 코스 진행중임.
+                ++hole;
             }
         }else{ //마지막 홀을 치고있음
-            //마지막 홀인데 라운드는 해당 코스의 마지막 라운드가 아니면
-            if(this.round % base != 0){
-                this.hole = 1 + (base * share);
-            }else{ //홀도 마지막이고 라운드도 마지막이면
-                ++this.hole;
-            }
+            hole =1;
         }
-        ++this.round;
+        ++round;
     }
 }
