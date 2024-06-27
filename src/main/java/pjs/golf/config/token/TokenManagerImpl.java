@@ -115,10 +115,10 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         String refreshTokenInCookie = cookieUtil.getCookie(request, TokenType.REFRESH_TOKEN.getValue()).getValue();
         String clientIP = WebCommon.getClientIp(request);
         if (validateToken(refreshTokenInCookie)) {
-            String storedIP = redisUtil.getData(refreshTokenInCookie);
-            log.info("clientIP ={}", clientIP);
-            log.info("storedIP ={}", storedIP);
-            if(clientIP.equals(storedIP)) return getAuthentication(refreshTokenInCookie);
+            //todo ip로 체크했더니 와이파이 <-> LTE 로 전환시 로그아웃 되어버림, 공유기 환경 대응어려움.
+//            String storedIP = redisUtil.getData(refreshTokenInCookie);
+//            if(clientIP.equals(storedIP))
+                return getAuthentication(refreshTokenInCookie);
         }
         return null;
     }

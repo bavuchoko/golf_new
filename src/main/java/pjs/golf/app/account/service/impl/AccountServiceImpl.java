@@ -90,7 +90,7 @@ public class AccountServiceImpl implements AccountService {
         String refreshToken = tokenManager.createToken(authentication, TokenType.REFRESH_TOKEN);
 
         tokenManager.addRefreshTokenToResponse(refreshToken, response);
-        redisUtil.setData(refreshToken, WebCommon.getClientIp(request));
+//        redisUtil.setData(refreshToken, WebCommon.getClientIp(request));
         return accessToken;
     }
 
@@ -102,9 +102,6 @@ public class AccountServiceImpl implements AccountService {
             //refresh토큰으로 부터 인증객체 생성
             Authentication authentication = tokenManager.getAuthenticationFromRefreshToken(request);
 
-//            //갱신토큰을 갱신함
-//            String refreshToken = tokenManager.createToken(authentication, TokenType.REFRESH_TOKEN);
-//            tokenManager.addRefreshTokenToResponse(refreshToken, response);
 
             return tokenManager.createToken(authentication, TokenType.ACCESS_TOKEN);
         }return null;
@@ -155,7 +152,7 @@ public class AccountServiceImpl implements AccountService {
                     .build();
             res.addHeader("Set-Cookie", cookie.toString());
 
-            redisUtil.deleteData(refreshTokenInCookie);
+//            redisUtil.deleteData(refreshTokenInCookie);
         }
         tokenManager.logout(req, res);
     }
