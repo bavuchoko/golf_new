@@ -18,6 +18,10 @@ public class Sheet {
     private Game game;
 
     @Id
+    private int hole;
+    @Id
+    private int course;
+
     private int round;
 
     @Id
@@ -25,12 +29,15 @@ public class Sheet {
     @JoinColumn(name = "player")
     private Account player;
 
-    private int hole;
+
 
     private int hit;
 
 
-    public void updateHit(int hit) {
+    public void updateHit(int hit, int course, int round, int hole) {
+        this.course =course;
+        this.round =round;
+        this.hole =hole;
         this.hit =hit;
     }
 }

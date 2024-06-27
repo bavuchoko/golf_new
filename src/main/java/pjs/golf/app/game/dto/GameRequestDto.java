@@ -19,6 +19,7 @@ public class GameRequestDto {
 
     private Account host;
     private int hole;
+    private int course;
     private LocalDateTime playDate;
     private Fields field;
     private List<Account> players;

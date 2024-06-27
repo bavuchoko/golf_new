@@ -37,14 +37,14 @@ public class SheetServiceImpl implements SheetService {
         //요청된 점수가 동일하면 굳이 업데이트 할 필요가 없음
         if(sheet.getHit() != sheetRequestDto.getHit()) {
             if (account.equals(game.getHost())) {
-                sheet.updateHit(sheetRequestDto.getHit());
+                sheet.updateHit(sheetRequestDto.getHit(), game.getCourse(), game.getRound(), game.getHole());
             }
         }
     }
 
 
     @Override
-    public void startRound(Long accountId, Long gameId, int round, int hole) {
+    public void startRound(Long accountId, Long gameId) {
         Game game = gameJpaRepository.findById(gameId).orElseThrow(()->new NoSuchDataException("해당경기 없음"));
         Account account = accountJpaRepository.findById(accountId).orElseThrow(()->new NoSuchDataException("해당유저 없음"));
         List<Account> players = game.getPlayers();
@@ -52,8 +52,9 @@ public class SheetServiceImpl implements SheetService {
             players.forEach(e -> {
                 Sheet sheet = Sheet.builder()
                         .game(game)
-                        .round(round)
-                        .hole(hole)
+                        .course(game.getCourse())
+                        .round(game.getRound())
+                        .hole(game.getHole())
                         .player(e)
                         .hit(0).build();
                 sheetJpaRepository.save(sheet);
@@ -73,6 +74,7 @@ public class SheetServiceImpl implements SheetService {
             players.forEach(e -> {
                 Sheet sheet = Sheet.builder()
                         .game(game)
+                        .course(game.getCourse())
                         .round(game.getRound())
                         .hole(game.getHole())
                         .player(e)

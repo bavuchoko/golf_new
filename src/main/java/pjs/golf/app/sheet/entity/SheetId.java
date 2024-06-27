@@ -16,6 +16,7 @@ import java.io.Serializable;
 public class SheetId implements Serializable {
 
     private Game game;
-    private int round;
+    private int course;
+    private int hole;
     private Account player;
 }

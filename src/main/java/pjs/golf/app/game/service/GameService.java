@@ -23,7 +23,7 @@ public interface GameService {
 
     EntityModel expelPlayer(Long id, Account account, Account target);
 
-    void startGame(Long id, Account account, int round, int hole) throws Exception;
+    void startGame(Long id, Account account,int course, int round, int hole) throws Exception;
 
     Game getGameInfo(Long id);
 

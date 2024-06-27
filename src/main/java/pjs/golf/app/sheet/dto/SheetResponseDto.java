@@ -15,5 +15,6 @@ public class SheetResponseDto {
     private int round;
     private AccountResponseDto player;
     private int hole;
+    private int course;
     private int hit;
 }

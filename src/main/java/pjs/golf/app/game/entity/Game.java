@@ -28,7 +28,7 @@ public class Game {
     @JoinColumn(name = "host")
     private Account host;
 
-
+    private int course;
     private int hole;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -62,19 +62,22 @@ public class Game {
     public void removeGame() {
         this.isRemoved =true;
     }
-    public void insertHole(int hole) {
-        this.hole =hole;
+
+    public void startGame(int course, int round, int hole){
+        this.course =course;
+        this.round = round;
+        this.hole = hole;
+        this.status = GameStatus.PLAYING;
     }
     public void updateRound(int  round) {
         this.round =round;
     }
     public void progressRound() {
 
-
         int base = 9;
-        int remainder = this.hole % base;
+        int remain = this.hole % base;
 
-        if( remainder != 0){ //마지막홀이 아님
+        if( remain != 0){ //마지막홀이 아님
             if(round % base == 0){ //홀은 중간인데 라운드는 해당 코스의 마지막 라운드임
                 ++hole;
             }else{ //홀 번호도 중간이고 해당 코스 진행중임.
@@ -84,5 +87,6 @@ public class Game {
             hole =1;
         }
         ++round;
+        this.course = (this.round/9) + 1;
     }
 }

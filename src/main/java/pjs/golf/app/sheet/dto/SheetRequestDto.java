@@ -14,5 +14,6 @@ public class SheetRequestDto {
     private int round;
     private Account player;
     private int hole;
+    private int course;
     private int hit;
 }

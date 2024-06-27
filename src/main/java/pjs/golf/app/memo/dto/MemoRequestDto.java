@@ -13,5 +13,7 @@ public class MemoRequestDto {
     private int round;
     private Fields field;
     private Account account;
+    private int hole;
+    private int course;
     private String content;
 }

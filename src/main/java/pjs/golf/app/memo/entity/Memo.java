@@ -14,7 +14,9 @@ import pjs.golf.app.account.entity.Account;
 public class Memo {
 
     @Id
-    private int round;
+    private int hole;
+    @Id
+    private int course;
 
     @Id
     @ManyToOne
@@ -26,6 +28,7 @@ public class Memo {
     @JoinColumn(name = "account")
     private Account account;
 
+    private int round;
     private String content;
 
     public void updateContent(String content) {

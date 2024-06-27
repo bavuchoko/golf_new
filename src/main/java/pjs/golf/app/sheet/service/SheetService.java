@@ -8,5 +8,5 @@ public interface SheetService {
     void updateScore(SheetRequestDto sheetRequestDto, Game game, Account account);
 
     void progressRound(Long accountId, Long gameId);
-    void startRound(Long accountId, Long gameId, int round, int hole);
+    void startRound(Long accountId, Long gameId);
 }

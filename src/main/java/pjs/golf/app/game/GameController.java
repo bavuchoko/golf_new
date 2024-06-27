@@ -120,7 +120,7 @@ public class GameController {
         }
         try {
             Game game = gameService.createGame(gameRequestDto, account);
-            gameService.startGame(game.getId(), account, 1, 1);
+            gameService.startGame(game.getId(), account, 1, 1, 1);
             EntityModel resource = gameService.getResource(game);
             return new ResponseEntity(resource, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
@@ -195,7 +195,7 @@ public class GameController {
             @CurrentUser Account account
     ) {
         try {
-            gameService.startGame(gameId, account, 1, hole);
+            gameService.startGame(gameId, account, 1,1, hole);
             EntityModel resource = gameService.getGameResource(gameId, account);
             sseEmitterService.broadcast(gameId, resource);
             return new  ResponseEntity(resource, HttpStatus.OK);

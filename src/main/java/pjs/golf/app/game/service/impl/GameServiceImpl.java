@@ -147,7 +147,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void startGame(Long id, Account account, int round, int hole) throws Exception {
+    public void startGame(Long id, Account account, int course, int round, int hole) throws Exception {
         Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
                 new NoSuchDataException("대상이 존재하지 않습니다.")
         );
@@ -157,10 +157,8 @@ public class GameServiceImpl implements GameService {
         try {
             if(gameEntity.getPlayers().size()>1){
                 if (gameEntity.getHost().equals(account)) {
-                    gameEntity.updateRound(round);
-                    gameEntity.insertHole(hole);
-                    gameEntity.changeStatus(GameStatus.PLAYING);
-                    sheetService.startRound(account.getId(), gameEntity.getId(), round, hole);
+                    gameEntity.startGame(course,round,hole);
+                    sheetService.startRound(account.getId(), gameEntity.getId());
                 } else {
                     throw new PermissionLimitedCustomException("권한이 없습니다.");
                 }

@@ -13,5 +13,7 @@ public class MemoResponseDto {
     private int round;
     private FieldsResponseDto field;
     private AccountResponseDto account;
+    private int hole;
+    private int course;
     private String content;
 }

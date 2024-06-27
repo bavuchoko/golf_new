@@ -11,7 +11,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class MemoId implements Serializable {
-    private int round;
+    private int course;
+    private int hole;
     private Fields field;
     private Account account;
 }
