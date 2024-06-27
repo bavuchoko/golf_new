@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +27,7 @@ import pjs.golf.config.filter.TokenFilter;
 @RequiredArgsConstructor
 public class AccountController {
 
+    private static final Logger log = LoggerFactory.getLogger(AccountController.class);
     private final AccountService accountService;
 
     @GetMapping
@@ -84,6 +87,7 @@ public class AccountController {
 
     @GetMapping("/validation")
     public ResponseEntity valdationTimeCheck(@RequestHeader(name = "Authorization") String token) {
+        log.info("token is ={}", token);
         if(StringUtils.hasText(token)){
             try {
                 token = token.replace("Bearer ", "");
