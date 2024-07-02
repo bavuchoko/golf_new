@@ -12,5 +12,5 @@ public interface MemoService {
     List createMemo(MemoRequestDto memoRequestDto, Account account);
     List updateMemo(MemoRequestDto memoRequestDto, Account account);
 
-    List deleteMemo(Account account, Long fieldId, int round);
+    List deleteMemo(Account account, Long fieldId, int course, int hole);
 }

@@ -11,6 +11,6 @@ import java.util.List;
 public interface MemoJpaRepository extends JpaRepository<Memo, MemoId> {
     List findByFieldAndAccount(Fields fields, Account account);
     List findMemoByAccountAndField(Account account, Fields field);
-    Memo findMemoByAccountAndFieldAndRound(Account account, Fields field, int round);
-    void deleteMemoByAccountAndFieldAndRound(Account account, Fields fields, int round);
+    Memo findMemoByAccountAndFieldAndCourseAndHole(Account account, Fields field, int course, int hole);
+    void deleteMemoByAccountAndFieldAndCourseAndHole(Account account, Fields fields, int course, int hole);
 }

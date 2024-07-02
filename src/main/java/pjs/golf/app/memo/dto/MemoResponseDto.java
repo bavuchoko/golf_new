@@ -10,7 +10,6 @@ import pjs.golf.app.account.dto.AccountResponseDto;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemoResponseDto {
-    private int round;
     private FieldsResponseDto field;
     private AccountResponseDto account;
     private int hole;

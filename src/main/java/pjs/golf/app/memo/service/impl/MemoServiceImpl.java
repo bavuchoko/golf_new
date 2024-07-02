@@ -25,6 +25,7 @@ import pjs.golf.app.memo.mapper.MemoMapper;
 import pjs.golf.app.memo.repository.MemoJpaRepository;
 import pjs.golf.app.memo.service.MemoService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -49,15 +50,15 @@ public class MemoServiceImpl implements MemoService {
         Fields fields = fieldsService.getField(memoRequestDto.getField().getId());
         memoRequestDto.setAccount(user);
         memoRequestDto.setField(fields);
+        memoRequestDto.setCreatedDate(LocalDateTime.now());
         memoJpaRepository.save(MemoMapper.Instance.toEntity(memoRequestDto));
-
         return getResources(memoJpaRepository.findByFieldAndAccount(memoRequestDto.getField(), account));
     }
 
     @Override
     @Transactional
     public List updateMemo(MemoRequestDto memoRequestDto, Account account) {
-        Memo memo = memoJpaRepository.findMemoByAccountAndFieldAndRound(account, memoRequestDto.getField(), memoRequestDto.getRound());
+        Memo memo = memoJpaRepository.findMemoByAccountAndFieldAndCourseAndHole(account, memoRequestDto.getField(),memoRequestDto.getCourse(), memoRequestDto.getHole());
         memo.updateContent(memoRequestDto.getContent());
         return getResources(memoJpaRepository.findByFieldAndAccount(memoRequestDto.getField(), account));
     }
@@ -66,10 +67,10 @@ public class MemoServiceImpl implements MemoService {
 
 
     @Override
-    public List deleteMemo(Account account, Long fieldId, int round) {
+    public List deleteMemo(Account account, Long fieldId, int course, int hole) {
 
         Fields fields = Fields.builder().id(fieldId).build();
-        memoJpaRepository.deleteMemoByAccountAndFieldAndRound(account,fields, round);
+        memoJpaRepository.deleteMemoByAccountAndFieldAndCourseAndHole(account,fields, course, hole);
         return getResources(memoJpaRepository.findByFieldAndAccount(fields, account));
     }
 
