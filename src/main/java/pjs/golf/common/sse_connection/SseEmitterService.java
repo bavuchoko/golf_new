@@ -28,6 +28,8 @@ public class SseEmitterService {
     private static final long RECONNECTION_TIMEOUT = 1000L;
     private final Logger log = LoggerFactory.getLogger(SseEmitterService.class);
 
+    //todo 유저 ip 로 SseEmitter를 관리하며 모바일에서 lte <-> wifi 등 ip가 변경될 때마다 문제가 발생 할 수 있으므로 적절한 대응 방안이 필요함. 
+    // 현재 생각중인건 갱신토큰으로 유저를 특정하는 방법 
     public SseEmitter subscribe(Long gameId, EntityModel entityModel, HttpServletRequest request) {
 
          String userIp = WebCommon.getClientIp(request);
