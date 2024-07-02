@@ -55,10 +55,10 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     public TokenManagerImpl(
             @Value("${spring.jwt.secret}") String secret,
-            @Value("${spring.jwt.token-validity-one-min}") long tokenValidityOneMin) {
+            @Value("${spring.jwt.token-validity-one-min}") long oneMinute) {
         this.secret = secret;
         // 2시간
-        this.accessTokenValidityTime = tokenValidityOneMin * 1 ;
+        this.accessTokenValidityTime = oneMinute * 100 ;
     }
 
     @Override

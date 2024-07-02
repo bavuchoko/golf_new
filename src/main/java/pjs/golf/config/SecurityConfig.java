@@ -21,6 +21,7 @@ import pjs.golf.config.token.TokenManager;
 import pjs.golf.config.token.TokenSecurityConfig;
 
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -31,8 +32,14 @@ public class SecurityConfig {
     private final TokenAuthenticationEntryPoint tokenAuthenticationEntryPoint;
     private final TokenAccessDeniedHandler tokenAccessDeniedHandler;
 
-    @Value("${path.host}")
-    private String CORS_PATH;
+    @Value("${path.real}")
+    private String REAL_PATH;
+
+    @Value("${path.dev.http}")
+    private String DEV_HTTP;
+
+    @Value("${path.dev.https}")
+    private String DEV_HTTPS;
 
 
     public SecurityConfig(TokenManager tokenManager, TokenAuthenticationEntryPoint tokenAuthenticationEntryPoint, TokenAccessDeniedHandler tokenAccessDeniedHandler) {
@@ -46,7 +53,7 @@ public class SecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
-            config.setAllowedOriginPatterns(Collections.singletonList(CORS_PATH));
+            config.setAllowedOriginPatterns(List.of(REAL_PATH, DEV_HTTP, DEV_HTTPS));
             config.setAllowCredentials(true);
             return config;
         };
