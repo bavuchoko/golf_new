@@ -87,6 +87,6 @@ public class Game {
             hole =1;
         }
         ++round;
-        this.course = (this.round/9) + 1;
+        this.course = ((this.round - 1)/9) + 1;
     }
 }
