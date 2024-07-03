@@ -226,19 +226,6 @@ public class GameController {
         }
     }
 
-//    @GetMapping("/{id}/close-conect")
-//    public void closeGameSseConnection(
-//            @PathVariable("id") Long id,
-//            @CurrentUser Account account
-//    ) {
-//        try {
-//
-//            sseEmitterService.closeConnection(id, account);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
 
     @GetMapping("/{gameId}/disconnect")
     public void disconnect(
