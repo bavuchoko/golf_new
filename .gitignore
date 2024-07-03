@@ -37,3 +37,7 @@ out/
 .vscode/
 /src/main/resources/application-database.properties
 /src/main/generated/
+/192.168.0.9+2.pem
+/192.168.0.9+2-key.pem
+/dev.golf.com+3.pem
+/dev.golf.com+3-key.pem

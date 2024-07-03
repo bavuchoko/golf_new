@@ -52,7 +52,7 @@ public class SheetController {
     @PostMapping("/next-round/{gameId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity nextRound(
-            @PathVariable Long gameId,
+            @PathVariable("gameId") Long gameId,
             @CurrentUser Account account){
         try {
             gameService.progressGame(gameId);
