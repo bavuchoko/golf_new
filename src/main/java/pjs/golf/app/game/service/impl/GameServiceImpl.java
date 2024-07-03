@@ -71,14 +71,14 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public EntityModel endGame(Long id, Account account) {
+    @Transactional
+    public void endGame(Long id, Account account) {
         Game game = gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
         if(account.equals(game.getHost())){
             game.changeStatus(GameStatus.END);
         }else {
             throw new PermissionLimitedCustomException("권한이 없습니다.");
         }
-        return getResource(game, account);
     }
 
     @Override
@@ -209,6 +209,8 @@ public class GameServiceImpl implements GameService {
     }
 
 
+
+    @Transactional(readOnly = true)
     public EntityModel getResource(Game game, Account account) {
         GameResponseDto gameResponseDto = GameMapper.Instance.toResponseDto(game);
         WebMvcLinkBuilder selfLink = linkTo(GameController.class).slash(gameResponseDto.getId());

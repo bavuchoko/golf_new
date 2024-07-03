@@ -216,12 +216,12 @@ public class GameController {
             @CurrentUser Account account
     ) {
         try {
-            EntityModel resource = gameService.endGame(gameId, account);
-            sseEmitterService.broadcast(gameId, resource);
-            return new ResponseEntity(resource,HttpStatus.OK);
+            gameService.endGame(gameId, account);
+            return new ResponseEntity(HttpStatus.OK);
         } catch (PermissionLimitedCustomException | NoSuchDataException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
