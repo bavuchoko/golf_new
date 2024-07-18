@@ -21,6 +21,7 @@ import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.game.dto.GameRequestDto;
 import pjs.golf.app.game.dto.GameStatus;
 import pjs.golf.app.game.entity.Game;
+import pjs.golf.app.game.mapper.GameMapper;
 import pjs.golf.app.game.service.GameService;
 import pjs.golf.common.CurrentUser;
 import pjs.golf.common.SearchDto;
@@ -61,7 +62,7 @@ public class GameController {
     }
 
     /**
-     * 단일조회
+     * 경기 구독
      * */
     @GetMapping( value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> getGame(
@@ -75,6 +76,23 @@ public class GameController {
             EntityModel game = gameService.getGameResource(id, account);
             SseEmitter subscribe = sseEmitterService.subscribe(id, game, request);
             return new ResponseEntity(subscribe, HttpStatus.OK);
+        } catch (NoSuchDataException e) {
+            return new ResponseEntity(null, HttpStatus.NO_CONTENT);
+        }
+    }
+
+    /**
+     * 단일조회
+     * */
+    @GetMapping( value = "/score/{id}")
+    public ResponseEntity getGameInfo(
+            @PathVariable("id") Long id,
+            @CurrentUser Account account
+    ) {
+        try {
+
+            EntityModel game = gameService.getGameResource(id, account);
+            return new ResponseEntity(game, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(null, HttpStatus.NO_CONTENT);
         }
