@@ -75,6 +75,7 @@ public class AccountController {
     public ResponseEntity reissue(HttpServletRequest request, HttpServletResponse response) {
         try{
             String accessToken = accountService.reIssueToken(request, response);
+            log.info("reissue token is ={}", accessToken);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(TokenFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
 
@@ -87,7 +88,7 @@ public class AccountController {
 
     @GetMapping("/validation")
     public ResponseEntity valdationTimeCheck(@RequestHeader(name = "Authorization") String token) {
-        log.info("token is ={}", token);
+        log.info("validation token is ={}", token);
         if(StringUtils.hasText(token)){
             try {
                 token = token.replace("Bearer ", "");
