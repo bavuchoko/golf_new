@@ -24,5 +24,5 @@ public interface AccountMapper {
 
     @Named("accountResponseList")
     @IterableMapping(qualifiedByName = "accountResponse")
-    List<AccountResponseDto> AccountResponse(List<Account> account);
+    List<AccountResponseDto> accountResponseList(List<Account> account);
 }
