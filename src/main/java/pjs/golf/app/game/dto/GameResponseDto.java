@@ -1,5 +1,6 @@
 package pjs.golf.app.game.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import pjs.golf.app.fields.dto.FieldsResponseDto;
 import pjs.golf.app.account.dto.AccountResponseDto;
@@ -19,6 +20,7 @@ public class GameResponseDto {
     private AccountResponseDto host;
     private int hole;
     private int course;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime playDate;
     private FieldsResponseDto field;
     private List<AccountResponseDto> players;

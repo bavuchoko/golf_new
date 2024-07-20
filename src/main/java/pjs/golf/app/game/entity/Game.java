@@ -4,9 +4,9 @@ package pjs.golf.app.game.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.fields.entity.Fields;
 import pjs.golf.app.game.dto.GameStatus;
-import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.sheet.entity.Sheet;
 
 import java.time.LocalDateTime;
@@ -30,6 +30,7 @@ public class Game {
 
     private int course;
     private int hole;
+
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime playDate;
