@@ -4,7 +4,6 @@ import lombok.*;
 import pjs.golf.app.fields.dto.FieldsResponseDto;
 import pjs.golf.app.account.dto.AccountResponseDto;
 import pjs.golf.app.sheet.dto.SheetResponseDto;
-import pjs.golf.app.sheet.entity.Sheet;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,5 +24,5 @@ public class GameResponseDto {
     private List<AccountResponseDto> players;
     private List<SheetResponseDto> sheets;
     private GameStatus status;
-    private boolean isRemoved;
+    private boolean removed;
 }

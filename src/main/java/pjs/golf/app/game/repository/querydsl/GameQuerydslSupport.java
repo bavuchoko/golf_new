@@ -48,7 +48,7 @@ public class GameQuerydslSupport extends QuerydslRepositorySupport {
         return builder
                 .and(QuerydslCommonMethod.nullSafeBuilder(() ->{
                     if(isRemoved ==null) return null;
-                    return game.isRemoved.eq(isRemoved);
+                    return game.removed.eq(isRemoved);
                 }));
 
     }

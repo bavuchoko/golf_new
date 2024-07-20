@@ -26,6 +26,6 @@ public class GameRequestDto {
     private List<Sheet> sheets;
 
     private String[] names;
-    private boolean isRemoved;
+    private boolean removed;
     private GameStatus status;
 }
