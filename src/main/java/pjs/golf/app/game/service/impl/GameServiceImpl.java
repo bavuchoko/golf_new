@@ -151,7 +151,7 @@ public class GameServiceImpl implements GameService {
         Game gameEntity = gameJpaRepository.findById(id).orElseThrow(()->
                 new NoSuchDataException("대상이 존재하지 않습니다.")
         );
-        if(!gameEntity.getStatus().equals(GameStatus.PLAYING)){
+        if(!gameEntity.getStatus().equals(GameStatus.OPEN)){
             throw new InCorrectStatusCustomException("요청을 처리할 수 없습니다.");
         }
         try {
