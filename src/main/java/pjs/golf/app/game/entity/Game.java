@@ -4,6 +4,7 @@ package pjs.golf.app.game.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import pjs.golf.app.account.entity.Account;
 import pjs.golf.app.fields.entity.Fields;
 import pjs.golf.app.game.dto.GameStatus;
@@ -47,6 +48,7 @@ public class Game {
     @JoinColumn(name = "game_id")
     private List<Sheet> sheets;
 
+    @Column(columnDefinition = "boolean default false")
     private boolean removed;
 
     @Enumerated(EnumType.STRING)
