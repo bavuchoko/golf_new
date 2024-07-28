@@ -155,7 +155,7 @@ public class GameServiceImpl implements GameService {
             throw new InCorrectStatusCustomException("요청을 처리할 수 없습니다.");
         }
         try {
-            if(gameEntity.getPlayers().size()>1){
+            if(gameEntity.getPlayers().size()>=1){
                 if (gameEntity.getHost().equals(account)) {
                     gameEntity.startGame(course,round,hole);
                     sheetService.startRound(account.getId(), gameEntity.getId());
