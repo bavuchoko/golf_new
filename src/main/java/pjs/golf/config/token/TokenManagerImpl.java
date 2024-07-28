@@ -58,7 +58,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
             @Value("${spring.jwt.token-validity-one-min}") long oneMinute) {
         this.secret = secret;
         // 2시간
-        this.accessTokenValidityTime = oneMinute * 100 ;
+        this.accessTokenValidityTime = oneMinute * 60 * 2 ;
     }
 
     @Override
@@ -80,10 +80,10 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         String gender   = ((AccountAdapter)(authentication.getPrincipal())).getAccount().getGender().toString();
 
 
-        //갱신토큰 1주일
+        //갱신토큰 8주
         long remainingMilliseconds = getRemainingMilliseconds();
 
-        //액세스토큰 유효기간 15분
+        //엑세스 토큰 2시간
         long now = (new Date()).getTime();
         Date validity =  tokenType == TokenType.ACCESS_TOKEN ?  new Date(now + this.accessTokenValidityTime) : new Date(now + remainingMilliseconds);
 
@@ -106,8 +106,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
     }
 
     private long getRemainingMilliseconds() {
-        //1주일
-        return this.accessTokenValidityTime * 60 * 24 * 7;
+        return this.accessTokenValidityTime * 12 * 7 * 8;
     }
 
     @Override
