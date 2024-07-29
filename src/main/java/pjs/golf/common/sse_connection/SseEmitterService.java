@@ -4,46 +4,52 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import pjs.golf.app.account.entity.Account;
-import pjs.golf.app.game.dto.GameResponseDto;
-import pjs.golf.common.WebCommon;
+import pjs.golf.config.utils.CookieUtil;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.LogManager;
 
 @Service
+@RequiredArgsConstructor
 public class SseEmitterService {
 
     private final Map<Long, Map<String, SseEmitter>> emitterMap = new ConcurrentHashMap<>();
     private static final Long TIMEOUT = 1L * 1000 * 60 * 2;
     private static final long RECONNECTION_TIMEOUT = 1000L;
     private final Logger log = LoggerFactory.getLogger(SseEmitterService.class);
-
+    private final CookieUtil cookieUtil;
+    private final String COOKIE_NAME = "Sse-Connection-Id";
+    
     //todo 유저 ip 로 SseEmitter를 관리하며 모바일에서 lte <-> wifi 등 ip가 변경될 때마다 문제가 발생 할 수 있으므로 적절한 대응 방안이 필요함. 
     // 현재 생각중인건 갱신토큰으로 유저를 특정하는 방법 
-    public SseEmitter subscribe(Long gameId, EntityModel entityModel, HttpServletRequest request) {
+    public SseEmitter subscribe(Long gameId, EntityModel entityModel, HttpServletRequest request, HttpServletResponse response) {
 
-         String userIp = WebCommon.getClientIp(request);
+        ResponseCookie connectionCookie = cookieUtil.getCookie(request, COOKIE_NAME);
+        String connectionId = connectionCookie.getValue();
 
-        SseEmitter emitter = getEmitter(userIp);
-        emitterMap.computeIfAbsent(gameId, k -> new ConcurrentHashMap<>()).put(userIp, emitter);
+        if(!StringUtils.hasText(connectionId)){
+            connectionId = UUID.randomUUID().toString();
+            cookieUtil.addCookie(response, COOKIE_NAME, connectionId);
+        }
+
+        SseEmitter emitter = getEmitter(connectionId);
+        emitterMap.computeIfAbsent(gameId, k -> new ConcurrentHashMap<>()).put(connectionId, emitter);
         emitterMap.forEach((gId, uMap) -> {
             uMap.forEach((uId, eM) -> {
                 log.error("gameId={}, userId ={}",gId, uId);
             });
-
-
-
-
         });
 
         //초기 연결시에 응답 데이터를 전송할 수도 있다.
@@ -120,12 +126,13 @@ public class SseEmitterService {
     }
 
     public void disconnect(Long gameId,HttpServletRequest request) {
-        String userIp = WebCommon.getClientIp(request);
+        ResponseCookie connectionCookie = cookieUtil.getCookie(request, COOKIE_NAME);
+        String connectionId = connectionCookie.getValue();
         try {
-            emitterMap.get(gameId).remove(userIp);
-            log.info("request to disConnect gameId ={} , userIp ={}", gameId, userIp);
+            emitterMap.get(gameId).remove(connectionId);
+            log.info("request to disConnect gameId ={} , connectionId ={}", gameId, connectionId);
         }catch (Exception e){
-            log.info("destroy connection failed gameId ={} , userIp ={}", gameId, userIp);
+            log.info("destroy connection failed gameId ={} , connectionId ={}", gameId, connectionId);
         }
     }
 

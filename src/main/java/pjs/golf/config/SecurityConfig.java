@@ -55,6 +55,7 @@ public class SecurityConfig {
             config.setAllowedMethods(Collections.singletonList("*"));
             config.setAllowedOriginPatterns(List.of(REAL_PATH, DEV_HTTP, DEV_HTTPS));
             config.setAllowCredentials(true);
+            config.setExposedHeaders(List.of("Sse-Connection-Id"));
             return config;
         };
     }

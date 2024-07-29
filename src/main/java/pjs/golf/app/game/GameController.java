@@ -74,7 +74,7 @@ public class GameController {
         try {
 
             EntityModel game = gameService.getGameResource(id, account);
-            SseEmitter subscribe = sseEmitterService.subscribe(id, game, request);
+            SseEmitter subscribe = sseEmitterService.subscribe(id, game, request, response);
             return new ResponseEntity(subscribe, HttpStatus.OK);
         } catch (NoSuchDataException e) {
             return new ResponseEntity(null, HttpStatus.NO_CONTENT);

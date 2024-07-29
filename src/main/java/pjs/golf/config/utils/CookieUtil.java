@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import pjs.golf.config.token.TokenType;
@@ -44,6 +45,17 @@ public class CookieUtil {
             }
         }
         return null;
+    }
+
+    public void addCookie(HttpServletResponse response, String cookieName, String value){
+        ResponseCookie newCookie = ResponseCookie.from(cookieName, value)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(1 * 24 * 60 * 60) //1일
+                .build();
+        response.addHeader("Set-Cookie", newCookie.toString());
     }
 
     public void removeCookie(HttpServletResponse response, String cookieName){
