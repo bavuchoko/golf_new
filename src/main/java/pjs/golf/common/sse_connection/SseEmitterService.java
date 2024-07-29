@@ -37,11 +37,13 @@ public class SseEmitterService {
     public SseEmitter subscribe(Long gameId, EntityModel entityModel, HttpServletRequest request, HttpServletResponse response) {
 
         ResponseCookie connectionCookie = cookieUtil.getCookie(request, COOKIE_NAME);
-        String connectionId = connectionCookie.getValue();
+        String connectionId = null;
 
-        if(!StringUtils.hasText(connectionId)){
+        if(connectionCookie== null){
             connectionId = UUID.randomUUID().toString();
             cookieUtil.addCookie(response, COOKIE_NAME, connectionId);
+        }else{
+            connectionId = connectionCookie.getValue();
         }
 
         SseEmitter emitter = getEmitter(connectionId);
@@ -127,12 +129,14 @@ public class SseEmitterService {
 
     public void disconnect(Long gameId,HttpServletRequest request) {
         ResponseCookie connectionCookie = cookieUtil.getCookie(request, COOKIE_NAME);
-        String connectionId = connectionCookie.getValue();
-        try {
-            emitterMap.get(gameId).remove(connectionId);
-            log.info("request to disConnect gameId ={} , connectionId ={}", gameId, connectionId);
-        }catch (Exception e){
-            log.info("destroy connection failed gameId ={} , connectionId ={}", gameId, connectionId);
+        if(connectionCookie !=null){
+            String connectionId = connectionCookie.getValue();
+            try {
+                emitterMap.get(gameId).remove(connectionId);
+                log.info("request to disConnect gameId ={} , connectionId ={}", gameId, connectionId);
+            }catch (Exception e){
+                log.info("destroy connection failed gameId ={} , connectionId ={}", gameId, connectionId);
+            }
         }
     }
 
