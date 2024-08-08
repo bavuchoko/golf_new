@@ -44,8 +44,7 @@ public class Game {
     @JoinTable(name = "game_players")
     private List<Account> players;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Sheet> sheets;
 
 

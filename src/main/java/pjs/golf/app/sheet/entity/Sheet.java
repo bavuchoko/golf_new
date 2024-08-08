@@ -15,6 +15,7 @@ public class Sheet {
 
     @Id
     @ManyToOne
+    @JoinColumn(name = "game_id")
     private Game game;
 
     @Id
