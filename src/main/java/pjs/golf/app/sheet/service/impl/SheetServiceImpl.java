@@ -61,6 +61,12 @@ public class SheetServiceImpl implements SheetService {
             });
         }
     }
+
+    @Override
+    public void removeByGame(Game game) {
+        sheetJpaRepository.removeByGame(game);
+    }
+
     @Override
     @Transactional
     public void progressRound(Long accountId, Long gameId) {

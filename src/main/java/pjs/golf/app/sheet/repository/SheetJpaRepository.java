@@ -14,4 +14,5 @@ public interface SheetJpaRepository extends JpaRepository<Sheet, SheetId> {
 
     List<Sheet> findAllByGame(Game game);
     Optional<Sheet> findByGameAndPlayerAndRound(Game game, Account account,int round);
+    void removeByGame(Game game);
 }

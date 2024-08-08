@@ -9,4 +9,6 @@ public interface SheetService {
 
     void progressRound(Long accountId, Long gameId);
     void startRound(Long accountId, Long gameId);
+
+    void removeByGame(Game game);
 }
