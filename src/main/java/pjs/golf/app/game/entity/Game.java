@@ -48,8 +48,6 @@ public class Game {
     @JoinColumn(name = "game_id")
     private List<Sheet> sheets;
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean removed;
 
     @Enumerated(EnumType.STRING)
     private GameStatus status;
@@ -60,10 +58,6 @@ public class Game {
 
     public void changeStatus(GameStatus gameStatus) {
         this.status = gameStatus;
-    }
-
-    public void removeGame() {
-        this.removed =true;
     }
 
     public void startGame(int course, int round, int hole){

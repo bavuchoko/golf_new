@@ -34,7 +34,7 @@ public class GameQuerydslSupport extends QuerydslRepositorySupport {
     public Page<Game> getGameListBetweenDate(SearchDto search, Pageable pageable, Account account, boolean isRemoved) {
 
         JPAQuery<Game> query= queryFactory.selectFrom(game).where(
-                        getBySearchOption(search, account, isRemoved)
+                        getBySearchOption(search, account)
                 ).where(game.playDate.between(search.getStartDate(),search.getEndDate()))
                 .orderBy(QuerydslCommonMethod.getOrderList(pageable.getSort(), Game.class).stream().toArray(OrderSpecifier[]::new))
                 .limit(pageable.getPageSize())
@@ -43,12 +43,11 @@ public class GameQuerydslSupport extends QuerydslRepositorySupport {
         return new PageImpl<>(result,pageable, result.size());
     }
 
-    private BooleanBuilder getBySearchOption(SearchDto searchDto, Account account, Boolean isRemoved) {
+    private BooleanBuilder getBySearchOption(SearchDto searchDto, Account account) {
         BooleanBuilder builder = new BooleanBuilder();
         return builder
                 .and(QuerydslCommonMethod.nullSafeBuilder(() ->{
-                    if(isRemoved ==null) return null;
-                    return game.removed.eq(isRemoved);
+                  return null;
                 }));
 
     }

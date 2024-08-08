@@ -86,7 +86,7 @@ public class GameServiceImpl implements GameService {
     public void removeGame(Long id, Account account) {
         Game game = gameJpaRepository.findById(id).orElseThrow(()-> new NoSuchDataException("해당하는 데이터가 없습니다."));
         if(account.equals(game.getHost())){
-            game.removeGame();
+            gameJpaRepository.delete(game);
         }else {
             throw new PermissionLimitedCustomException("권한이 없습니다.");
         }

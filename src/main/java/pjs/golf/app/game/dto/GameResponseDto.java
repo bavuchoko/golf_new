@@ -26,5 +26,4 @@ public class GameResponseDto {
     private List<AccountResponseDto> players;
     private List<SheetResponseDto> sheets;
     private GameStatus status;
-    private boolean removed;
 }

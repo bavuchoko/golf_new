@@ -48,15 +48,6 @@ public class CookieUtil {
     }
 
     public void addCookie(HttpServletResponse response, String cookieName, String value){
-//        ResponseCookie newCookie = ResponseCookie.from(cookieName, value)
-//                .path("/")
-//                .sameSite("None")
-//                .httpOnly(true)
-//                .secure(true)
-//                .maxAge(1 * 24 * 60 * 60) //1일
-//                .build();
-//        response.addHeader("Set-Cookie", newCookie.toString());
-
         Cookie newCookie = new Cookie(cookieName, value);
         newCookie.setPath("/");
         newCookie.setHttpOnly(true);
@@ -67,8 +58,12 @@ public class CookieUtil {
         response.addCookie(newCookie);
 
         // SameSite 속성을 추가하기 위해 직접 헤더를 설정
-        String headerValue = String.format("%s; %s", newCookie.toString(), "SameSite=None");
-        response.setHeader("Set-Cookie", headerValue);
+        String cookieHeader = String.format("%s=%s; Path=%s; Max-Age=%d; HttpOnly; Secure; SameSite=None",
+                newCookie.getName(),
+                newCookie.getValue(),
+                newCookie.getPath(),
+                newCookie.getMaxAge());
+        response.addHeader("Set-Cookie", cookieHeader);
     }
 
     public void removeCookie(HttpServletResponse response, String cookieName){
