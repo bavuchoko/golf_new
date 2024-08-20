@@ -20,6 +20,7 @@ public class FieldsRequestDto {
     private String latitude;
     private String longitude;
     private int courses;
+    private int holes;
     private Account register;
     private LocalDateTime createDate;
     private boolean isRemoved;

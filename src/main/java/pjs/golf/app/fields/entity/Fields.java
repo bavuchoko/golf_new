@@ -29,7 +29,8 @@ public class Fields {
     private String latitude;
     private String longitude;
 
-    private int courses;    //각 코스는 9홀이 기본값. 코스명은 실제 점수 입력시 A부터 대문자로 부여됨. 코스가 몇개인지 정보만 가지고 있으면 된다.
+    private int courses;
+    private int holes;
 
     @ManyToOne
     @JoinColumn(name = "register")
