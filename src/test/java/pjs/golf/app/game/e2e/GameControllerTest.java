@@ -1,6 +1,5 @@
-package pjs.golf.app.game;
+package pjs.golf.app.game.e2e;
 
-import org.aspectj.weaver.ast.Or;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ class GameControllerTest extends BaseControllerTest {
     @Test
     @Order(2)
     @Description("경기 생성")
-    public void createGameBefore() throws Exception {
+    public void 기존경기_생성() throws Exception {
 
 
         String[] names = {"aaa"};
@@ -58,7 +57,7 @@ class GameControllerTest extends BaseControllerTest {
 
     @Test
     @Description("목록조회")
-    public void getGameList() throws Exception {
+    public void 목록조회() throws Exception {
 
         String startDate = "startDate=2023-01-01T00:00:00";
         String endDate = "endDate=2023-10-01T00:00:00";
@@ -71,7 +70,7 @@ class GameControllerTest extends BaseControllerTest {
 
     @Test
     @Description("단일조회")
-    public void getSingleGame() throws Exception {
+    public void 단일조회() throws Exception {
 
         mockMvc.perform(get("/api/game/1")
                     .contentType(MediaType.APPLICATION_JSON))
@@ -80,7 +79,7 @@ class GameControllerTest extends BaseControllerTest {
 
     @Test
     @Description("경기 생성")
-    public void createGame() throws Exception {
+    public void 경기생성() throws Exception {
 
         String[] names = {"memeber_1","bbb","ccc"};
         GameRequestDto game = GameRequestDto.builder()
@@ -112,7 +111,7 @@ class GameControllerTest extends BaseControllerTest {
     @Test
     @Order(3)
     @Description("경기참가")
-    public void enrollGame() throws Exception {
+    public void 경기참가() throws Exception {
 
         String token =TestHelper.getBaererToken(accountService, "test_user2");
 
@@ -128,7 +127,7 @@ class GameControllerTest extends BaseControllerTest {
     @Test
     @Order(4)
     @Description("경기시작")
-    public void startGame() throws Exception {
+    public void 경기시작() throws Exception {
         String token =TestHelper.getBaererToken(accountService, "test_user1");
         mockMvc.perform(put("/api/game/play/{id}",1)
                          .param("hole", "1")
@@ -140,4 +139,20 @@ class GameControllerTest extends BaseControllerTest {
 
     }
 
+    @Test
+    @Description("경기종료")
+    public void 경기종료() throws Exception {
+        String token =TestHelper.getBaererToken(accountService, "test_user1");
+        mockMvc.perform(put("/api/game/end/{id}",1)
+                        .param("hole", "1")
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+        ;
+
+        mockMvc.perform(get("/api/game/score/{id}", 1)
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(GameStatus.END.toString()));
+    }
 }
