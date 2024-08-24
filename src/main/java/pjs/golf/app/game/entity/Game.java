@@ -68,17 +68,13 @@ public class Game {
     public void updateRound(int  round) {
         this.round =round;
     }
-    public void progressRound() {
 
+    public void progressRound() {
         int base = 9;
         int remain = this.hole % base;
 
         if( remain != 0){ //마지막홀이 아님
-            if(round % base == 0){ //홀은 중간인데 라운드는 해당 코스의 마지막 라운드임
-                ++hole;
-            }else{ //홀 번호도 중간이고 해당 코스 진행중임.
-                ++hole;
-            }
+            ++hole;
         }else{ //마지막 홀을 치고있음
             hole =1;
         }
