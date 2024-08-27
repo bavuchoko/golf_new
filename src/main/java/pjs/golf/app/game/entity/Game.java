@@ -65,6 +65,9 @@ public class Game {
         this.hole = hole;
         this.status = GameStatus.PLAYING;
     }
+    public void expelPlayer(Account account){
+        this.players.remove(account);
+    }
     public void updateRound(int  round) {
         this.round =round;
     }

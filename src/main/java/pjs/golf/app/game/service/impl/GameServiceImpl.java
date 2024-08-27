@@ -126,7 +126,7 @@ public class GameServiceImpl implements GameService {
 
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public EntityModel expelPlayer(Long id, Account account, Account target) {
         Game entity = gameJpaRepository.findById(id).orElseThrow(
                 ()-> new NoSuchDataException("")
@@ -138,7 +138,7 @@ public class GameServiceImpl implements GameService {
             throw new InCorrectStatusCustomException("hostExpelException");
         }
         if(entity.getHost().equals(account)) {
-            entity.getPlayers().remove(target);
+            entity.expelPlayer(target);
         }else{
             if(!account.equals(target))  throw new InCorrectStatusCustomException("selfExpelAllowedException");
             else entity.getPlayers().remove(target);
