@@ -17,8 +17,8 @@ public class FieldsRequestDto {
     private String address;
     private String addressDetail;
     private String city;
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
     private int courses;
     private int holes;
     private Account register;

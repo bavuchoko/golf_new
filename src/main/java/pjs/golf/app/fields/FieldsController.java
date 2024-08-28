@@ -38,8 +38,27 @@ public class FieldsController {
             @RequestParam(required = false, name="searchTxt") String searchTxt,
             PagedResourcesAssembler<Fields> assembler
     ){
-        SearchDto search = SearchDto.builder().SearchTxt(searchTxt).build();
-        CollectionModel resources = fieldService.getFieldListResources(search,pageable, assembler);
+        SearchDto search = SearchDto.builder().searchTxt(searchTxt).build();
+        CollectionModel resources = fieldService.getFieldListResources(search, pageable, assembler);
+        return new ResponseEntity(resources, HttpStatus.OK);
+    }
+
+
+    /**
+     * 필드 목록 조회
+     * */
+    @GetMapping("/near")
+    public ResponseEntity getNearFieldList(
+            Pageable pageable,
+            @RequestParam(required = false, name="searchTxt") String searchTxt,
+            @RequestParam(required = false, name="city") String city,
+            @RequestParam(required = false, name="option") String option,
+            @RequestParam(required = false, name="lat") Double latitude,
+            @RequestParam(required = false, name="long") Double longitude,
+            PagedResourcesAssembler<Fields> assembler
+    ){
+        SearchDto search = SearchDto.builder().searchTxt(searchTxt).city(city).option(option).build();
+        CollectionModel<Fields> resources = fieldService.getNearFieldListResources(search, latitude, longitude, pageable, assembler);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
 

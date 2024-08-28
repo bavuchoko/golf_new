@@ -1,5 +1,9 @@
 package pjs.golf.app.fields.service.impl;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.jpa.impl.JPAQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +12,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pjs.golf.app.fields.FieldsController;
@@ -25,7 +30,9 @@ import pjs.golf.common.exception.PermissionLimitedCustomException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.querydsl.core.types.dsl.Expressions.numberTemplate;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static pjs.golf.app.fields.entity.QFields.fields;
 
 
 @Service
@@ -35,8 +42,9 @@ public class FieldsServiceImpl implements FieldsService {
     private final FieldsJpaRepository fieldsJpaRepository;
     private final FieldsJpaQuerydslSupport fieldsJpaQuerydslSupport;
     @Override
-    public CollectionModel getFieldListResources(SearchDto city, Pageable pageable, PagedResourcesAssembler<Fields> assembler) {
-        Page<Fields> fields = fieldsJpaQuerydslSupport.getFieldsListBySearCh(city,pageable);
+    public CollectionModel getFieldListResources(SearchDto searchDto, Pageable pageable, PagedResourcesAssembler<Fields> assembler) {
+        Page<Fields> fields = fieldsJpaQuerydslSupport.getFieldsListBySearCh(searchDto,pageable);
+
         return this.getResources(fields, assembler);
     }
 
@@ -79,6 +87,8 @@ public class FieldsServiceImpl implements FieldsService {
         }
     }
 
+
+
     @Override
     public EntityModel createField(FieldsRequestDto fieldsDto, Account account) {
         fieldsDto.setRegister(account);
@@ -107,5 +117,12 @@ public class FieldsServiceImpl implements FieldsService {
         );
         pageResources.add(Link.of("/docs/asciidoc/index.html#create-field-api").withRel("profile"));
         return pageResources;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CollectionModel  getNearFieldListResources(SearchDto search, Double latitude, Double longitude, Pageable pageable, PagedResourcesAssembler<Fields> assembler){
+        Page<Fields> fields = fieldsJpaQuerydslSupport.getNearFieldListResources(search, latitude, longitude, pageable, assembler);
+        return this.getResources(fields, assembler);
     }
 }

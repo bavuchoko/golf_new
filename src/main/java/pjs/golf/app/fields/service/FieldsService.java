@@ -23,4 +23,6 @@ public interface FieldsService {
     EntityModel updateFields(FieldsRequestDto fieldsDto, Account account);
 
     void removeFields(Long id, Account account);
+
+    CollectionModel getNearFieldListResources(SearchDto search, Double latitude, Double longitude, Pageable pageable, PagedResourcesAssembler<Fields> assembler);
 }
