@@ -48,7 +48,7 @@ public class FieldsJpaQuerydslSupport extends QuerydslRepositorySupport {
     public Page<Fields> getFieldsListBySearCh(SearchDto search, Pageable pageable) {
 
         JPAQuery<Fields> query= queryFactory.selectFrom(fields).where(
-                        constainSerachText(search).or(eqCity(search))
+                        constainSerachText(search).and(eqCity(search))
                 )
                 .orderBy(QuerydslCommonMethod.getOrderList(pageable.getSort(), Fields.class).stream().toArray(OrderSpecifier[]::new))
                 .limit(pageable.getPageSize())

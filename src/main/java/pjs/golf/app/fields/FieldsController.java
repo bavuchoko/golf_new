@@ -36,9 +36,10 @@ public class FieldsController {
     public ResponseEntity getFieldList(
             Pageable pageable,
             @RequestParam(required = false, name="searchTxt") String searchTxt,
+            @RequestParam(required = false, name="city") String city,
             PagedResourcesAssembler<Fields> assembler
     ){
-        SearchDto search = SearchDto.builder().searchTxt(searchTxt).build();
+        SearchDto search = SearchDto.builder().searchTxt(searchTxt).city(city).build();
         CollectionModel resources = fieldService.getFieldListResources(search, pageable, assembler);
         return new ResponseEntity(resources, HttpStatus.OK);
     }
