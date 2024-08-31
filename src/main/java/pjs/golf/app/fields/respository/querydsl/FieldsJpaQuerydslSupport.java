@@ -87,7 +87,7 @@ public class FieldsJpaQuerydslSupport extends QuerydslRepositorySupport {
                 latitude
         );
 
-        BooleanExpression withinRadius = distance.loe(2000.0);
+        BooleanExpression withinRadius = distance.loe(10000.0);
 
         JPAQuery<Fields> query = queryFactory.selectFrom(fields)
                 .where(withinRadius)
