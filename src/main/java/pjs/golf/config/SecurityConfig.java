@@ -13,8 +13,10 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import pjs.golf.config.filter.CustomFilter;
 import pjs.golf.config.filter.TokenAccessDeniedHandler;
 import pjs.golf.config.filter.TokenAuthenticationEntryPoint;
 import pjs.golf.config.token.TokenManager;
@@ -31,7 +33,7 @@ public class SecurityConfig {
     private final TokenManager tokenManager;
     private final TokenAuthenticationEntryPoint tokenAuthenticationEntryPoint;
     private final TokenAccessDeniedHandler tokenAccessDeniedHandler;
-
+    private final CustomFilter customFilter;
     @Value("${path.real}")
     private String REAL_PATH;
 
@@ -42,7 +44,10 @@ public class SecurityConfig {
     private String DEV_HTTPS;
 
 
-    public SecurityConfig(TokenManager tokenManager, TokenAuthenticationEntryPoint tokenAuthenticationEntryPoint, TokenAccessDeniedHandler tokenAccessDeniedHandler) {
+    public SecurityConfig(
+            CustomFilter customFilter,
+            TokenManager tokenManager, TokenAuthenticationEntryPoint tokenAuthenticationEntryPoint, TokenAccessDeniedHandler tokenAccessDeniedHandler) {
+        this.customFilter = customFilter;
         this.tokenManager = tokenManager;
         this.tokenAuthenticationEntryPoint = tokenAuthenticationEntryPoint;
         this.tokenAccessDeniedHandler = tokenAccessDeniedHandler;
@@ -69,6 +74,7 @@ public class SecurityConfig {
 
         httpSecurity
                 .httpBasic(HttpBasicConfigurer::disable)
+                .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(configuer ->
