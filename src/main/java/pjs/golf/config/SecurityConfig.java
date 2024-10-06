@@ -58,7 +58,7 @@ public class SecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
-            config.setAllowedOriginPatterns(List.of(REAL_PATH, DEV_HTTP, DEV_HTTPS, "https://localhost", "http://localhost"));
+            config.setAllowedOriginPatterns(List.of(REAL_PATH, DEV_HTTP, DEV_HTTPS, "https://127.0.0.1", "http://127.0.0.1"));
             config.setAllowCredentials(true);
             config.setExposedHeaders(List.of("Sse-Connection-Id"));
             return config;
