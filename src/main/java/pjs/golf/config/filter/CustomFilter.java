@@ -10,6 +10,8 @@ import java.io.IOException;
 
 import java.util.logging.LogRecord;
 
+import static pjs.golf.common.WebCommon.getClientIp;
+
 @Slf4j
 @Component
 public class CustomFilter implements Filter {
@@ -27,7 +29,10 @@ public class CustomFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestURI = httpRequest.getRequestURI();
 
-        log.info("Incoming request: " + requestURI);
+        // 클라이언트 IP 주소 가져오기
+        String clientIp = getClientIp(httpRequest);
+
+        log.info("Incoming request from IP: " + clientIp + " to endpoint: " + requestURI);
 
         chain.doFilter(request, response);
     }
